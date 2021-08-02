@@ -1,6 +1,7 @@
 const program = require('commander');
 
 const ServerCommand = require('./src/command/server');
+const InsertFileCommand = require('./src/command/insert_file');
 
 // init
 const services = require('./src/modules/services');
@@ -23,13 +24,12 @@ program
 program
     .command('insert-file')
     .description('insert data from file into db')
-    .option('-m, --mode <mode>')
+    .option('-p, --path <path>')
+    .option('-m, --mode <mode>', 'development')
     .action(async options => {
 
-    
-
         await services.boot(__dirname, options);
-        const cmd = new ServerCommand();
+        const cmd = new InsertFileCommand(options);
         cmd.execute(options);
     });
 

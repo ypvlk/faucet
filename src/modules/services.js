@@ -10,6 +10,8 @@ const knex = require('knex');
 
 const Http = require('./http/server');
 
+const InsertFileService = require('./insert_file');
+
 const LogsRepository = require('./db/repository/logs_repository');
 
 const WinstonMysqlTransport = require('./system/winston_mysql_transport');
@@ -21,6 +23,7 @@ let logger;
 let systemUtil;
 let mysqlDB;
 let logsRepository;
+let insertFileService;
 
 const parameters = {};
 
@@ -112,6 +115,17 @@ module.exports = {
         ));
     },
 
+    getInsertFileService: function() {
+        if (insertFileService) {
+            return insertFileService;
+        }
+    
+        return (insertFileService = new InsertFileService(
+            this.getSystemUtil(),
+            this.getLogger()
+        ));
+    },
+
     createWebserverInstance: function() {
         return new Http(
             this.getSystemUtil(),
@@ -119,4 +133,13 @@ module.exports = {
             parameters.projectDir
         );
     },
+    
+
+    // createFaucetInstance: function() {
+    //     return new Http(
+    //         this.getSystemUtil(),
+    //         this.getLogger(),
+    //         parameters.projectDir
+    //     );
+    // },
 }
