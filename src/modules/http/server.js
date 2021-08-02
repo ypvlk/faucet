@@ -10,9 +10,11 @@ const fs = require('fs');
 module.exports = class Http {
     constructor(
         systemUtil,
+        logger,
         projectDir
     ) {
         this.systemUtil = systemUtil;
+        this.logger = logger;
         this.projectDir = projectDir;
     }
 
@@ -104,6 +106,7 @@ module.exports = class Http {
 
         app.listen(port, ip);
 
+        this.logger.info(`Webserver listening on: ${ip}:${port}`);
         console.log(`Webserver listening on: ${ip}:${port}`);
     }
 }

@@ -20,4 +20,17 @@ program
         cmd.execute(options);
     });
 
+program
+    .command('insert-file')
+    .description('insert data from file into db')
+    .option('-m, --mode <mode>')
+    .action(async options => {
+
+    
+
+        await services.boot(__dirname, options);
+        const cmd = new ServerCommand();
+        cmd.execute(options);
+    });
+
 program.parse(process.argv);

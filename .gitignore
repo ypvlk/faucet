@@ -6,10 +6,13 @@
 .vscode/
 
 #
-/config/*.json
+/config/conf.json
 
 #
 /node_modules
+/var/tickers/*.csv
+#/src/modules/strategy/strategies/**
+#!/src/modules/strategy/strategies/redme.txt
 
 # Logs and databases #
 logs/**

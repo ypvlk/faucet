@@ -10,6 +10,7 @@ const knex = require('knex');
 
 const Http = require('./http/server');
 
+const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
 
 let config;
@@ -32,7 +33,15 @@ module.exports = {
             throw new Error(`Invalid conf.json file. Please check: ${String(e)}`);
         }
     
-        await this.getMysqlDatabase();
+        this.getMysqlDatabase();
+
+        if (mysqlDB) { //Check knex connection
+            try {
+                await mysqlDB.raw('select 1+1 as result')
+            } catch (err) {
+                throw new Error(`Knex test is failed, please check ${err}`);
+            } 
+        }
     },
 
     getConfig: () => {
@@ -47,20 +56,13 @@ module.exports = {
         return (systemUtil = new SystemUtil(this.getConfig()));
     },
 
-    getMysqlDatabase: async function() {
+    getMysqlDatabase: function() {
         if (mysqlDB) {
             return mysqlDB;
         }
 
         const knexDb = knex(knexConfig[process.env.NODE_ENV]);
-        try {
-            await knexDb.raw('select 1+1 as result')
-        } catch (err) {
-            throw new Error(`Knex test is failed, please check ${err}`);
-        } finally {
-            knexDb.destroy();
-        }
-
+        
         return (mysqlDB = knexDb);
     },
 
@@ -87,11 +89,11 @@ module.exports = {
                 new transports.Console({
                     level: 'error'
                 }),
-                // new WinstonSqliteTransport({
-                //     level: 'debug',
-                //     database_connection: this.getDatabase(),
-                //     table: 'logs'
-                // })
+                new WinstonMysqlTransport({
+                    level: 'debug',
+                    database_connection: this.getMysqlDatabase(),
+                    table: 'logs'
+                })
             ]
         }));
     },
@@ -99,6 +101,7 @@ module.exports = {
     createWebserverInstance: function() {
         return new Http(
             this.getSystemUtil(),
+            this.getLogger(),
             parameters.projectDir
         );
     },
