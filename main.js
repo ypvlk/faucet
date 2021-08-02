@@ -11,7 +11,11 @@ program
     .option('-m, --mode <mode>')
     .action(async options => {
 
-        await services.boot(__dirname);
+        if (options && !options.mode) {
+            throw new Error(`Option mode is allowed`);
+        }
+
+        await services.boot(__dirname, options);
         const cmd = new ServerCommand();
         cmd.execute(options);
     });

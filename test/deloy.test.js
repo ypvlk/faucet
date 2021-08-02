@@ -7,5 +7,11 @@ describe('#validate pre deployment files', function() {
 
         expect(config.webserver.ip).toBe('0.0.0.0');
         expect(typeof config.webserver.port).toBe('number');
+
+        expect(typeof config.mysql_db.prod.port).toBe('number');
+        expect(config.mysql_db.dev.host).toBe('localhost');
+        expect(config.mysql_db.dev.user).toBe('root');
+        expect(config.mysql_db.dev.debug).toBe(true);
+        expect(config.mysql_db.prod.debug).toBe(false);
     });
 });
