@@ -7,6 +7,8 @@ const _ = require('lodash');
 
 const Http = require('./http/server');
 
+const SystemUtil = require('./system/system_util');
+
 let config;
 let eventEmitter;
 let logger;
@@ -19,7 +21,7 @@ module.exports = {
         parameters.projectDir = projectDir;
 
         try {
-            config = JSON.parse(fs.readFileSync(`${parameters.projectDir}/conf.json`, 'utf8'));
+            config = JSON.parse(fs.readFileSync(`${parameters.projectDir}/config/conf.json`, 'utf8'));
         } catch (e) {
             throw new Error(`Invalid conf.json file. Please check: ${String(e)}`);
         }
