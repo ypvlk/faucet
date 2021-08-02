@@ -10,6 +10,8 @@ const knex = require('knex');
 
 const Http = require('./http/server');
 
+const LogsRepository = require('./db/repository/logs_repository');
+
 const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
 
@@ -18,6 +20,7 @@ let eventEmitter;
 let logger;
 let systemUtil;
 let mysqlDB;
+let logsRepository;
 
 const parameters = {};
 
@@ -96,6 +99,17 @@ module.exports = {
                 })
             ]
         }));
+    },
+
+    getLogsRepository: function() {
+        if (logsRepository) {
+            return logsRepository;
+        }
+    
+        return (logsRepository = new LogsRepository(
+            this.getMysqlDatabase(),
+            this.getLogger()
+        ));
     },
 
     createWebserverInstance: function() {
