@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "dev": "node main.js server -m dev",
+    "dev": "nodemon main.js server -m dev",
     "start": "node main.js server -m prod",
     "test": "jest"
   },

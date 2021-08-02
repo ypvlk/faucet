@@ -5,6 +5,8 @@
 .nyc
 .vscode/
 
+#
+/config/*.json
 
 #
 /node_modules
