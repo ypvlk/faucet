@@ -1,12 +1,14 @@
 
+const knexfile = require('../knexfile');
+
 module.exports = class KnexConfig {
 
     static get MODE_DEV() {
-        return 'dev';
+        return 'development';
     }
 
     static get MODE_PROD() {
-        return 'prod';
+        return 'production';
     }
 
     constructor(
@@ -18,7 +20,7 @@ module.exports = class KnexConfig {
             throw new Error(`Invalid options mode given: ${projectMode}`);
         }
 
-        this.client = systemUtil.getConfig(`mysql_db.${projectMode}.client`, 'mysql2'),
+        this.client = knexfile[projectMode].client,
         this.connection = {
             host:       systemUtil.getConfig(`mysql_db.${projectMode}.host`, 'localhost'),
             port:       systemUtil.getConfig(`mysql_db.${projectMode}.port`, 3306),
@@ -62,12 +64,7 @@ module.exports = class KnexConfig {
         this.createRetryIntervalMillis = 200;
         this.propagateCreateError = false;
 
-        this.migrations = {
-            directory: projectDir + systemUtil.getConfig(`mysql_db.${projectMode}.migrations_path`, '/db/migrations')
-        },
-
-        this.seeds = {
-            directory: projectDir + systemUtil.getConfig(`mysql_db.${projectMode}.seeds_path`, '/db/seeds')
-        }
+        this.migrations = knexfile[projectMode].migrations;
+        this.seeds = knexfile[projectMode].seeds;
     }
 }

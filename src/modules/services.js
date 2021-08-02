@@ -64,17 +64,17 @@ module.exports = {
             return mysqlDB;
         }
 
-        const knexDb = knex(this.getKnexConfig());
+        // const knexDb = knex(this.getKnexConfig());
+        console.log('q', this.getKnexConfig());
+        // try {
+        //     await knexDb.raw('select 1+1 as result')
+        // } catch (err) {
+        //     throw new Error(`Knex test is failed, please check ${err}`);
+        // } finally {
+        //     knexDb.destroy();
+        // }
 
-        try {
-            await knexDb.raw('select 1+1 as result')
-        } catch (err) {
-            throw new Error(`Knex test is failed, please check ${err}`);
-        } finally {
-            knexDb.destroy();
-        }
-
-        return (mysqlDB = knexDb);
+        // return (mysqlDB = knexDb);
     },
 
     getEventEmitter: function() {

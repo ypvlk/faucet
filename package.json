@@ -4,9 +4,12 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "dev": "nodemon main.js server -m dev",
-    "start": "node main.js server -m prod",
-    "test": "jest"
+    "dev": "nodemon main.js server -m development",
+    "start": "node main.js server -m production",
+    "test": "jest",
+    "migrate": "knex migrate:latest",
+    "rollback": "knex migrate:rollback",
+    "seed": "knex seed:run"
   },
   "author": "",
   "license": "ISC",
