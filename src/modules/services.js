@@ -4,18 +4,18 @@ const events = require('events');
 const { createLogger, transports, format } = require('winston');
 
 const _ = require('lodash');
+
+const knexConfig = require('../../knexfile');
 const knex = require('knex');
 
 const Http = require('./http/server');
 
-const KnexConfig = require('../../db/knex_config');
 const SystemUtil = require('./system/system_util');
 
 let config;
 let eventEmitter;
 let logger;
 let systemUtil;
-let knexConfig;
 let mysqlDB;
 
 const parameters = {};
@@ -47,34 +47,21 @@ module.exports = {
         return (systemUtil = new SystemUtil(this.getConfig()));
     },
 
-    getKnexConfig: function() {
-        if (knexConfig) {
-            return knexConfig;
-        }
-
-        return (knexConfig = new KnexConfig(
-            this.getSystemUtil(),
-            parameters.projectDir,
-            parameters.projectMode
-        ))
-    },
-
     getMysqlDatabase: async function() {
         if (mysqlDB) {
             return mysqlDB;
         }
 
-        // const knexDb = knex(this.getKnexConfig());
-        console.log('q', this.getKnexConfig());
-        // try {
-        //     await knexDb.raw('select 1+1 as result')
-        // } catch (err) {
-        //     throw new Error(`Knex test is failed, please check ${err}`);
-        // } finally {
-        //     knexDb.destroy();
-        // }
+        const knexDb = knex(knexConfig[process.env.NODE_ENV]);
+        try {
+            await knexDb.raw('select 1+1 as result')
+        } catch (err) {
+            throw new Error(`Knex test is failed, please check ${err}`);
+        } finally {
+            knexDb.destroy();
+        }
 
-        // return (mysqlDB = knexDb);
+        return (mysqlDB = knexDb);
     },
 
     getEventEmitter: function() {
