@@ -1,0 +1,38 @@
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+.nyc
+.vscode/
+
+
+#
+/node_modules
+
+# Logs and databases #
+logs/**
+*.log
+*.db
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Optional npm cache directory
+.npm
+
+# dotenv environment variables file
+.env
+.env.test
+.env.production
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Output of 'npm pack'
+*.tgz
+
+
