@@ -1,18 +1,29 @@
-
+const fs = require('fs');
 
 module.exports = class InsertFileService {
-    constructor() {
-
+    constructor(
+        systemUtil,
+        logger,
+        tickersRepository
+    ) {
+        this.logger = logger;
+        this.systemUtil = systemUtil;
+        this.tickersRepository = tickersRepository;
     }
 
     insertOneFile(options = {}) {
-        //Проверяем наличие файла
-        //Берем путь к файлу с опций
-        
-        //дальше что? 
-        //должны быть подключены  много репозиториев, ну тоесть все
-        //тут с пути достаем таблицу и так дальше. 
+        const { path } = options;
 
-        //Завтра уже буду делать
+        try {
+            fs.accessSync(path, fs.constants.F_OK);
+        } catch (err) {
+            this.logger.error(`Insert file error: ${err}`);
+            return undefined;
+        }
+
+        //Теперь я хочу читать по строчке (по 10 например) с csv 
+        //и тупо эти же данные вставлять в базу
+        //при чем я хочу это делать в цикле
+        
     }
 }

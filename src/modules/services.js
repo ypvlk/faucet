@@ -13,6 +13,7 @@ const Http = require('./http/server');
 const InsertFileService = require('./insert_file');
 
 const LogsRepository = require('./db/repository/logs_repository');
+const TickersRepository = require('./db/repository/tickers_repository');
 
 const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
@@ -23,6 +24,7 @@ let logger;
 let systemUtil;
 let mysqlDB;
 let logsRepository;
+let tickersRepository;
 let insertFileService;
 
 const parameters = {};
@@ -115,6 +117,17 @@ module.exports = {
         ));
     },
 
+    getTickersRepository: function() {
+        if (tickersRepository) {
+            return tickersRepository;
+        }
+    
+        return (tickersRepository = new TickersRepository(
+            this.getMysqlDatabase(),
+            this.getLogger()
+        ));
+    },
+
     getInsertFileService: function() {
         if (insertFileService) {
             return insertFileService;
@@ -122,7 +135,8 @@ module.exports = {
     
         return (insertFileService = new InsertFileService(
             this.getSystemUtil(),
-            this.getLogger()
+            this.getLogger(),
+            this.getTickersRepository()
         ));
     },
 
