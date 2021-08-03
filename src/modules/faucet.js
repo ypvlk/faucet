@@ -1,6 +1,4 @@
 
-
-
 module.exports = class Faucet {
     constructor(
         eventEmitter,
@@ -26,7 +24,7 @@ module.exports = class Faucet {
         // }, time);
 
         setInterval(async () => {
-            
+            // if (new Date().getUTCHours === 23 &&)
         }, 1000 * 60 * 5);
     }
 };

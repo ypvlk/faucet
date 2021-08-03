@@ -17,6 +17,7 @@ const TickersRepository = require('./db/repository/tickers_repository');
 
 const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
+const RequestClient = require('./system/request_client');
 
 let config;
 let eventEmitter;
@@ -26,6 +27,7 @@ let mysqlDB;
 let logsRepository;
 let tickersRepository;
 let insertFileService;
+let requestClient;
 
 const parameters = {};
 
@@ -115,6 +117,14 @@ module.exports = {
             this.getMysqlDatabase(),
             this.getLogger()
         ));
+    },
+
+    getRequestClient: function() {
+        if (requestClient) {
+            return requestClient;
+        }
+    
+        return (requestClient = new RequestClient());
     },
 
     getTickersRepository: function() {

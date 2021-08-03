@@ -100,6 +100,15 @@ module.exports = class Http {
                 today: `new Date().toISOString().slice(0, 10): ${today}`
             })
         });
+
+        app.post('/tickers/upload', async (req, res) => {
+            // const file = req.file;
+            // console.log('file', file);
+            // const buffer = file.buffer;
+            // console.log('buffer', buffer);
+
+            
+        });
         
         const ip = this.systemUtil.getConfig('webserver.ip', '0.0.0.0');
         const port = this.systemUtil.getConfig('webserver.port', 3000);
