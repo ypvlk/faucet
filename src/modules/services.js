@@ -12,6 +12,8 @@ const Http = require('./http/server');
 
 const InsertFileService = require('./insert_file');
 
+const StrategyManager = require('./strategy/strategy_manager');
+
 const LogsRepository = require('./db/repository/logs_repository');
 const TickersRepository = require('./db/repository/tickers_repository');
 
@@ -28,6 +30,7 @@ let logsRepository;
 let tickersRepository;
 let insertFileService;
 let requestClient;
+let strategyManager;
 
 const parameters = {};
 
@@ -140,6 +143,18 @@ module.exports = {
         ));
     },
 
+    getStrategyManager: function() {
+        if (strategyManager) {
+            return strategyManager;
+        }
+    
+        return (strategyManager = new StrategyManager(
+            this.getEventEmitter(),
+            this.getLogger(),
+            parameters.projectDir
+        ));
+    },
+
     getInsertFileService: function() {
         if (insertFileService) {
             return insertFileService;
@@ -163,6 +178,7 @@ module.exports = {
     
 
     // createFaucetInstance: function() {
+    // this.getStrategyManager().init();
     //     return new Http(
     //         this.getSystemUtil(),
     //         this.getLogger(),

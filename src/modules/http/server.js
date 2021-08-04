@@ -121,7 +121,7 @@ module.exports = class Http {
         //     const fileSizeInBytes = stats.size;
 
         //     let readStream = fs.createReadStream(path);
-            
+        
         //     const url = 'http://167.172.44.124:3000/tickers/download';
         //     const options = { date: date, period: period, limit: limit };
         //     const method = 'post';
