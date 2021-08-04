@@ -15,8 +15,9 @@ module.exports = class RequestClient {
                 const query = querystring.stringify(options);
                 url = `${url}?${query}`;
             }
-
+            
             f(url, {
+                method: 'GET',
                 headers: headers ? headers : {'Content-Type': 'application/json'}
             })
             .then(res => {
@@ -28,19 +29,26 @@ module.exports = class RequestClient {
             })
             .catch(err => {
                 this.logger.error(`Request execute error: ${String(err)}`);
-                resolve()
+                resolve(null)
             });
         });
     }
 
-    executePOSTRequest(url, method, body, headers) {
+    executePOSTRequest(uri, method, options = {}, body, headers) {
         return new Promise(resolve => {
 
-            if (!url || !method) throw new Error(`Url and method are allowed`);
+            if (!uri || !method) throw new Error(`Url and method are allowed`);
+
+            let url = uri;
+
+            if (Object.keys(options).length > 0) {
+                const query = querystring.stringify(options);
+                url = `${url}?${query}`;
+            }
 
             f(url, {
-                method: method,
-                body:    JSON.stringify(body),
+                method: method ? method : 'POST',
+                body:   body && JSON.stringify(body),
                 headers: headers ? headers : { 'Content-Type': 'application/json' },
             })
             .then(res => {
@@ -57,9 +65,9 @@ module.exports = class RequestClient {
         })
     }
 
-    executeUploadStreamRequest(uri, method, readStream, fileSizeInBytes, options = {}, headers) {
+    executeUploadRequest(uri, method, options = {}, body, headers) {
         return new Promise(resolve => {
-            if (!uri || !method) throw new Error(`Uri and method are allowed`);
+            if (!uri) throw new Error(`Uri is allowed`);
 
             let url = uri;
 
@@ -68,19 +76,14 @@ module.exports = class RequestClient {
                 url = `${url}?${query}`;
             }
 
-            f(uri, {
-                method: method,
-                body:   readStream,
-                headers: headers ? headers : {
-                    "Content-length": fileSizeInBytes
-                },
+            f(url, {
+                method: method ? method : 'GET',
+                body:   body && JSON.stringify(body),
+                headers: headers && headers
             })
             .then(res => {
                 if (!res.ok) throw new Error(`${JSON.stringify(res.statusText)}`);
-                return res.json();
-            })
-            .then(body => {
-                resolve(body);
+                resolve(res);
             })
             .catch(err => {
                 this.logger.error(`Request execute error: ${String(err)}`);

@@ -35,4 +35,27 @@ program
         });
     });
 
+program
+    .command('backtesting')
+    .description('process testing strategy on saved data and params')
+    .option('-d, --date <date>')
+    .option('-c, --correction [correction...]')
+    .option('-g, --gposition [gposition...]')
+    .option('-tp, --tprofit <tprofit>')
+    .option('-p, --period <period>', '3000')
+    .option('-l, --limit <limit>', '100')
+    .action(async options => {
+
+        if (!options.date || !options.correction || !options.gposition || !options.tprofit) {
+            throw new Error('Not all options are given');
+        }
+
+        await services.boot(__dirname);
+
+        const cmd = new BacktestingCommand();
+        cmd.execute(options);
+
+        // process.exit(0);
+    });
+
 program.parse(process.argv);

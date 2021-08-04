@@ -105,34 +105,41 @@ module.exports = class Http {
             })
         });
 
-        // app.get('/tickers/upload', async (req, res) => {
-        //     //localhost:3000/tickers/upload?date=2021-08-03&period=3000&limit=1000
-        //     const {
-        //         date,
-        //         period,
-        //         limit
-        //     } = req.query;
+        app.get('/tickers/upload', async (req, res) => {
+            //localhost:3000/tickers/upload?date=2021-08-04&period=3000&limit=1000&host=167.172.44.124:3000
+            const {
+                date,
+                period,
+                limit,
+                host
+            } = req.query;
 
-        //     if (!date || !period || !limit) res.status(400).end('Error: date, period and limit query params are allowed');
+            if (!date || !period || !limit || !host) res.status(400).end('Error: date, period, limit and host query params are allowed');
 
-        //     const path = `${this.projectDir}/var/backtesting/foo.csv`;
+            const path = `${this.projectDir}/var/backtesting/${host}_${date}_tickers.csv`;
 
-        //     const stats = fs.statSync(path);
-        //     const fileSizeInBytes = stats.size;
+            const url = `http://${host}/tickers/download`;
+            const options = { date: date, period: period, limit: limit };
+            const headers = {
+                'Authorization': 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
+            }
 
-        //     let readStream = fs.createReadStream(path);
-        
-        //     const url = 'http://167.172.44.124:3000/tickers/download';
-        //     const options = { date: date, period: period, limit: limit };
-        //     const method = 'post';
-        //     const headers = {
-        //         'Authorization': 'Basic ' + Buffer.from(username + ":" + password).toString('base64'),
-        //         'Content-length': fileSizeInBytes
-        //     }
+            try {
+                fs.accessSync(path, fs.constants.F_OK);
+            } catch (err) {
+                const data = await this.requestClient.executeUploadRequest(url, null, options, null, headers);
+                
+                const fileStream = fs.createWriteStream(path);
+                
+                await new Promise((resolve, reject) => {
+                    data.body.pipe(fileStream);
+                    data.body.on('error', reject);
+                    fileStream.on('finish', resolve);
+                });
+            }
 
-        //     const a = await this.requestClient.executeUploadStreamRequest(url, method, readStream, fileSizeInBytes, options, headers);
-        //     console.log('a', a);
-        // });
+            res.json({ success: true, message: 'File uploaded.' })
+        });
         
         const ip = this.systemUtil.getConfig('webserver.ip', '0.0.0.0');
         const port = this.systemUtil.getConfig('webserver.port', 3000);

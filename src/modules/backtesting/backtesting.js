@@ -1,31 +1,28 @@
 
-module.exports = class Faucet {
+module.exports = class Backtesting {
     constructor(
         eventEmitter,
-        logger,
-        systemUtil
+        tickers,
+        tickListener,
+        signalDatabaseListener,
+        signalListener,
+        strategyDatabaseListener,
+        actionDatabaseListener
     ) {
         this.eventEmitter = eventEmitter;
-        this.logger = logger;
-        this.systemUtil = systemUtil;
+        this.tickers = tickers;
+        this.tickListener = tickListener;
+        this.signalDatabaseListener = signalDatabaseListener;
+        this.signalListener = signalListener;
+        this.strategyDatabaseListener = strategyDatabaseListener;
+        this.actionDatabaseListener = actionDatabaseListener;
     }
 
-    start() {
-        console.log('Faucet module start...');
+    start(options = {}) {
+        console.log('Backtesting module started...');
 
         const me = this;
         const { eventEmitter } = this;
-
-        // setTimeout(async () => {
-        //     // console.log(`Got: ${this.tickerLength} tickers`);
-        //     console.log('Backfill Tickers module finish');
-
-        //     process.exit(0);
-        // }, time);
-
-        setInterval(async () => {
-            // if (new Date().getUTCHours === 23 &&)
-        }, 1000 * 60 * 5);
 
         eventEmitter.on('tick', function(options) {
             me.tickListener.onTick(options);
