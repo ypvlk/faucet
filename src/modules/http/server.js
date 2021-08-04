@@ -116,7 +116,7 @@ module.exports = class Http {
 
             if (!date || !period || !limit || !host) res.status(400).end('Error: date, period, limit and host query params are allowed');
 
-            const path = `${this.projectDir}/var/backtesting/${host}_${date}_tickers.csv`;
+            const path = `${this.projectDir}/var/tickers/${host}_${date}_tickers.csv`;
 
             const url = `http://${host}/tickers/download`;
             const options = { date: date, period: period, limit: limit };
@@ -128,7 +128,7 @@ module.exports = class Http {
                 fs.accessSync(path, fs.constants.F_OK);
             } catch (err) {
                 const data = await this.requestClient.executeUploadRequest(url, null, options, null, headers);
-                
+
                 const fileStream = fs.createWriteStream(path);
                 
                 await new Promise((resolve, reject) => {
