@@ -6,7 +6,7 @@ module.exports = class RequestClient {
         this.logger = logger;
     }
 
-    executeGETRequest(uri, options = {}) {
+    executeGETRequest(uri, options = {}, headers) {
         return new Promise(resolve => {
             if (!uri) throw new Error(`Uri is allowed`);
             let url = uri;
@@ -16,18 +16,20 @@ module.exports = class RequestClient {
                 url = `${url}?${query}`;
             }
 
-            f(url)
-                .then(res => {
-                    if (!res.ok) throw new Error(`${JSON.stringify(res.statusText)}`);
-                    return res.json();
-                })
-                .then(body => {
-                    resolve(body);
-                })
-                .catch(err => {
-                    this.logger.error(`Request execute error: ${String(err)}`);
-                    resolve()
-                });
+            f(url, {
+                headers: headers ? headers : {'Content-Type': 'application/json'}
+            })
+            .then(res => {
+                if (!res.ok) throw new Error(`${JSON.stringify(res.statusText)}`);
+                return res.json();
+            })
+            .then(body => {
+                resolve(body);
+            })
+            .catch(err => {
+                this.logger.error(`Request execute error: ${String(err)}`);
+                resolve()
+            });
         });
     }
 
@@ -40,6 +42,38 @@ module.exports = class RequestClient {
                 method: method,
                 body:    JSON.stringify(body),
                 headers: headers ? headers : { 'Content-Type': 'application/json' },
+            })
+            .then(res => {
+                if (!res.ok) throw new Error(`${JSON.stringify(res.statusText)}`);
+                return res.json();
+            })
+            .then(body => {
+                resolve(body);
+            })
+            .catch(err => {
+                this.logger.error(`Request execute error: ${String(err)}`);
+                resolve()
+            });
+        })
+    }
+
+    executeUploadStreamRequest(uri, method, readStream, fileSizeInBytes, options = {}, headers) {
+        return new Promise(resolve => {
+            if (!uri || !method) throw new Error(`Uri and method are allowed`);
+
+            let url = uri;
+
+            if (Object.keys(options).length > 0) {
+                const query = querystring.stringify(options);
+                url = `${url}?${query}`;
+            }
+
+            f(uri, {
+                method: method,
+                body:   readStream,
+                headers: headers ? headers : {
+                    "Content-length": fileSizeInBytes
+                },
             })
             .then(res => {
                 if (!res.ok) throw new Error(`${JSON.stringify(res.statusText)}`);

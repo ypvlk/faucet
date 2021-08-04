@@ -124,7 +124,9 @@ module.exports = {
             return requestClient;
         }
     
-        return (requestClient = new RequestClient());
+        return (requestClient = new RequestClient(
+            this.getLogger()
+        ));
     },
 
     getTickersRepository: function() {
@@ -154,6 +156,7 @@ module.exports = {
         return new Http(
             this.getSystemUtil(),
             this.getLogger(),
+            this.getRequestClient(),
             parameters.projectDir
         );
     },

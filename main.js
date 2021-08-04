@@ -30,7 +30,9 @@ program
 
         await services.boot(__dirname, options);
         const cmd = new InsertFileCommand(options);
-        cmd.execute(options);
+        cmd.execute(options, function() {
+            process.exit(0);
+        });
     });
 
 program.parse(process.argv);

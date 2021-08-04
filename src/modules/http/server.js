@@ -6,15 +6,19 @@ const cookieParser = require('cookie-parser');
 const moment = require('moment');
 const os = require('os');
 const fs = require('fs');
+// const multer = require('multer');
+// const upload = multer({ dest: 'uploads/' });
 
 module.exports = class Http {
     constructor(
         systemUtil,
         logger,
+        requestClient,
         projectDir
     ) {
         this.systemUtil = systemUtil;
         this.logger = logger;
+        this.requestClient = requestClient;
         this.projectDir = projectDir;
     }
 
@@ -101,14 +105,34 @@ module.exports = class Http {
             })
         });
 
-        app.post('/tickers/upload', async (req, res) => {
-            // const file = req.file;
-            // console.log('file', file);
-            // const buffer = file.buffer;
-            // console.log('buffer', buffer);
+        // app.get('/tickers/upload', async (req, res) => {
+        //     //localhost:3000/tickers/upload?date=2021-08-03&period=3000&limit=1000
+        //     const {
+        //         date,
+        //         period,
+        //         limit
+        //     } = req.query;
 
+        //     if (!date || !period || !limit) res.status(400).end('Error: date, period and limit query params are allowed');
+
+        //     const path = `${this.projectDir}/var/backtesting/foo.csv`;
+
+        //     const stats = fs.statSync(path);
+        //     const fileSizeInBytes = stats.size;
+
+        //     let readStream = fs.createReadStream(path);
             
-        });
+        //     const url = 'http://167.172.44.124:3000/tickers/download';
+        //     const options = { date: date, period: period, limit: limit };
+        //     const method = 'post';
+        //     const headers = {
+        //         'Authorization': 'Basic ' + Buffer.from(username + ":" + password).toString('base64'),
+        //         'Content-length': fileSizeInBytes
+        //     }
+
+        //     const a = await this.requestClient.executeUploadStreamRequest(url, method, readStream, fileSizeInBytes, options, headers);
+        //     console.log('a', a);
+        // });
         
         const ip = this.systemUtil.getConfig('webserver.ip', '0.0.0.0');
         const port = this.systemUtil.getConfig('webserver.port', 3000);

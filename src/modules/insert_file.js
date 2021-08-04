@@ -12,7 +12,7 @@ module.exports = class InsertFileService {
         this.tickersRepository = tickersRepository;
     }
 
-    insertOneFile(options = {}) {
+    insertOneFile(options = {}, cb) {
         const { path } = options;
         
         try {
@@ -23,16 +23,11 @@ module.exports = class InsertFileService {
         }
 
         let data = [];
-        const count = 9;
+        const count = 500; 
 
-        fs.createReadStream(path)
+        const stream = fs.createReadStream(path)
             .pipe(csvParse({delimiter: ',', from_line: 2}))
             .on('data', async row => {
-                if (data && data.length === count) {
-                    await this.tickersRepository.insert(data);
-                    data = [];
-                }
-
                 data.push({
                     id: row[0],
                     exchange: row[1],
@@ -44,12 +39,30 @@ module.exports = class InsertFileService {
                     period: row[7],
                     close: row[8],
                     income_at: row[9]
-                });        
+                });       
+                
+                //TODO
+                //Сейчас последние строки меньше 1000 не вставляет в базу
+                //Это нужно будет потом исправить, пока малое значения count будет решать
+                if (data && data.length > count) {
+                    try {
+                        stream.pause();
+                        await this.tickersRepository.insert(data);
+                    } catch (err) {
+                        this.logger.error(`Stream pause or insert into db error: ${String(err)}`);
+                    } finally {
+                        data = [];
+                        stream.resume();
+                    }
+                }
             })
             .on('end',function() {
                 fs.unlink(path, function() {
                     console.log('File was deleted.');
-                })
+                    if (cb && typeof cb === 'function') {
+                        cb();
+                    }
+                });
             });
     }
 }
