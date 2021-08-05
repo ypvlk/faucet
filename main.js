@@ -2,6 +2,7 @@ const program = require('commander');
 
 const ServerCommand = require('./src/command/server');
 const InsertFileCommand = require('./src/command/insert_file');
+const BacktestingCommand = require('./src/command/backtesting');
 
 // init
 const services = require('./src/modules/services');
@@ -37,7 +38,8 @@ program
 
 program
     .command('backtesting')
-    .description('process testing strategy on saved data and params')
+    .description('process testing strategy saved data and params')
+    .option('-pr, --pairs <pairs>')
     .option('-d, --date <date>')
     .option('-c, --correction [correction...]')
     .option('-g, --gposition [gposition...]')
@@ -46,7 +48,7 @@ program
     .option('-l, --limit <limit>', '100')
     .action(async options => {
 
-        if (!options.date || !options.correction || !options.gposition || !options.tprofit) {
+        if (!options.pr || !options.date || !options.correction || !options.gposition || !options.tprofit) {
             throw new Error('Not all options are given');
         }
 
@@ -54,8 +56,6 @@ program
 
         const cmd = new BacktestingCommand();
         cmd.execute(options);
-
-        // process.exit(0);
     });
 
 program.parse(process.argv);

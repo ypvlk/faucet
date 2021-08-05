@@ -9,19 +9,33 @@ const knexConfig = require('../../knexfile');
 const knex = require('knex');
 
 const Http = require('./http/server');
+const Backtesting = require('./backtesting/backtesting');
 
 const InsertFileService = require('./insert_file');
+const TickersStreamService = require('./backtesting/tickers_stream_service');
 
 const StrategyManager = require('./strategy/strategy_manager');
 
+const StrategyDatabaseListener = require('./listener/strategy_database_listener');
+const TickListener = require('./listener/tick_listener');
+
+const TickerExportHttp = require('./http/controller/ticker_export_http');
+const CsvExportHttp = require('./http/controller/csv_export_http');
+
 const LogsRepository = require('./db/repository/logs_repository');
 const TickersRepository = require('./db/repository/tickers_repository');
+const MeanReversionRepository = require('./db/repository/mean_reversion_repository');
 
 const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
 const RequestClient = require('./system/request_client');
+const Queue = require('./system/queue');
+
+const Tickers = require('../storage/tickers');
+const BacktestingStorage = require('../storage/backtesting');
 
 let config;
+let instances;
 let eventEmitter;
 let logger;
 let systemUtil;
@@ -31,6 +45,15 @@ let tickersRepository;
 let insertFileService;
 let requestClient;
 let strategyManager;
+let tickersStreamService;
+let strategyDatabaseListener;
+let backtestingStorage;
+let meanReversionRepository;
+let tickListener;
+let tickers;
+let queue;
+let tickerExportHttp;
+let csvExportHttp;
 
 const parameters = {};
 
@@ -40,6 +63,13 @@ module.exports = {
         parameters.projectDir = projectDir;
         parameters.projectMode = mode;
 
+        try {
+            instances = require(`${parameters.projectDir}/instance.js`);
+        } catch (e) {
+            throw new Error(`Invalid instance.js file. Please check: ${String(e)}`);
+        }
+        console.log('I', instances.symbols[0]);
+        return
         try {
             config = JSON.parse(fs.readFileSync(`${parameters.projectDir}/config/conf.json`, 'utf8'));
         } catch (e) {
@@ -51,14 +81,18 @@ module.exports = {
         if (mysqlDB) { //Check knex connection
             try {
                 await mysqlDB.raw('select 1+1 as result')
-            } catch (err) {
-                throw new Error(`Knex test is failed, please check ${err}`);
+            } catch (e) {
+                throw new Error(`Knex test is failed, please check ${String(e)}`);
             } 
         }
     },
 
     getConfig: () => {
         return config;
+    },
+
+    getInstances: () => {
+        return instances;
     },
 
     getSystemUtil: function() {
@@ -85,6 +119,14 @@ module.exports = {
         }
     
         return (eventEmitter = new events.EventEmitter());
+    },
+
+    getQueue: function() {
+        if (queue) {
+            return queue;
+        }
+    
+        return (queue = new Queue());
     },
 
     getLogger: function() {
@@ -122,6 +164,14 @@ module.exports = {
         ));
     },
 
+    getBacktestingStorage: function() {
+        if (backtestingStorage) {
+            return backtestingStorage;
+        }
+    
+        return (backtestingStorage = new BacktestingStorage());
+    },
+
     getRequestClient: function() {
         if (requestClient) {
             return requestClient;
@@ -132,12 +182,31 @@ module.exports = {
         ));
     },
 
+    getTickers: function() {
+        if (tickers) {
+            return tickers;
+        }
+    
+        return (tickers = new Tickers());
+    },
+
     getTickersRepository: function() {
         if (tickersRepository) {
             return tickersRepository;
         }
     
         return (tickersRepository = new TickersRepository(
+            this.getMysqlDatabase(),
+            this.getLogger()
+        ));
+    },
+
+    getMeanReversionRepository: function() {
+        if (meanReversionRepository) {
+            return meanReversionRepository;
+        }
+    
+        return (meanReversionRepository = new MeanReversionRepository(
             this.getMysqlDatabase(),
             this.getLogger()
         ));
@@ -167,11 +236,86 @@ module.exports = {
         ));
     },
 
+    getStrategyDatabaseListener: function() {
+        if (strategyDatabaseListener) {
+            return strategyDatabaseListener;
+        }
+    
+        return (strategyDatabaseListener = new StrategyDatabaseListener(
+            this.getMeanReversionRepository(),
+            this.getBacktestingStorage()
+        ));
+    },
+
+    getTickListener: function() {
+        if (tickListener) {
+            return tickListener;
+        }
+    
+        return (tickListener = new TickListener(
+            this.getTickers(),
+            this.getInstances(),
+            this.getStrategyManager(),
+            this.getEventEmitter(),
+            this.getLogger(),
+            this.getSystemUtil()
+        ));
+    },
+
+    getTickerExportHttp: function() {
+        if (tickerExportHttp) {
+            return tickerExportHttp;
+        }
+    
+        return (tickerExportHttp = new TickerExportHttp(
+            this.getTickersRepository()
+        ));
+    },
+
+    getCsvExportHttp: function() {
+        if (csvExportHttp) {
+            return csvExportHttp;
+        }
+    
+        return (csvExportHttp = new CsvExportHttp(
+            this.getMeanReversionRepository(),
+            this.getLogger(),
+            parameters.projectDir
+        ));
+    },
+
+    getTickersStreamService: function() {
+        if (tickersStreamService) {
+            return tickersStreamService;
+        }
+    
+        return (tickersStreamService = new TickersStreamService(
+            this.getEventEmitter(),
+            this.getLogger(),
+            this.getInstances(),
+            this.getSystemUtil(),
+            this.getTickerExportHttp(),
+            this.getTickers(),
+            this.getBacktestingStorage(),
+            this.getCsvExportHttp(),
+            parameters.projectDir,
+        ));
+    },
+
     createWebserverInstance: function() {
         return new Http(
             this.getSystemUtil(),
             this.getLogger(),
             this.getRequestClient(),
+            parameters.projectDir
+        );
+    },
+
+    createBacktestingInstance: function() {
+        return new Backtesting(
+            this.getEventEmitter(),
+            this.getTickListener(),
+            this.getStrategyDatabaseListener(),
             parameters.projectDir
         );
     },

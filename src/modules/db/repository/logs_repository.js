@@ -41,7 +41,7 @@ module.exports = class LogsRepository {
                     .limit(limit)
                     .orderBy(`${this.table}.created_at`, 'desc')
                     .then(result => { 
-                        if (result && result.length) resolve(result.map(r => r.level));
+                        if (result && result.length) resolve(result);
                     })
                     .catch(err => { 
                         this.logger.error(`Mysql error in table ${this.table}: ${err}`)

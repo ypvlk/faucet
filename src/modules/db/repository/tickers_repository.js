@@ -38,4 +38,29 @@ module.exports = class TickersRepository {
                 })
         });
     }
+
+    getMultipleTickers(pairs, period, startTime, endTime, limit = 1000) {
+        return new Promise(resolve => {
+            const parameters = pairs.map(Object.values);
+
+            console.log('param', parameters);
+
+            this.mysqlDB
+                .timeout(3000, {cancel: true})
+                .from(this.table)
+                .select('*')
+                .whereIn([`${this.table}.exchange`, `${this.table}.symbol`], parameters)
+                .andWhere(`${this.table}.period`, period)
+                .andWhere(`${this.table}.income_at`, '>=', start)
+                .andWhere(`${this.table}.income_at`, '<', end)
+                .limit(limit)
+                .orderBy(`${this.table}.income_at`, 'asc')
+                .then(result => { 
+                    if (result && result.length) resolve(result);
+                })
+                .catch(err => { 
+                    this.logger.error(`Mysql error in table ${this.table}: ${err}`)
+                })
+        });
+    }
 };

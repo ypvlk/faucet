@@ -2,6 +2,7 @@ const _ = require('lodash');
 const moment = require('moment');
 
 const Ticker = require('../../dict/ticker');
+const TickEvent = require('../../event/tick_event');
 
 module.exports = class TickersStreamService {
     constructor(
@@ -32,30 +33,29 @@ module.exports = class TickersStreamService {
         this.exchange_commission = 0.08;
     }
 
-    init(options = {}) {
+    init(item, options = {}) {
+        console.log('Tickers stream service warmup done; starting ticks...');
+
         const me = this;
 
         let _files = [];
 
+        const { pair, strategy } = item;
+
         const _opt = this.parseOptions(options);
         
-        //Жду 30 сек и начинаю доставать тикеры с бд
-        setTimeout(async () => {
-            console.log('Tickers stream service warmup done; starting ticks...');
+        const split_pairs = pair.split(':') ? pair.split(':') : pair; //binance_futures.BTCBUSD:binance_futures.ETHBUSD
+        const pairs = split_pairs.map(p => ({
+            exchange: p.split('.')[0], //binance_futures.BTCBUSD
+            symbol: p.split('.')[1]
+        }));
 
-            //Я достаю с инстансов стаки(биржу и символы)
-            const pairs = this.instances.symbols.map(pair => ({
-                exchange: pair.exchange,
-                symbol: pair.symbol
-            }));
+        const limit = options.limit ? +options.limit : 1000;
+        const period = options.period ? +options.period : 3000;
 
-            const limit = options.limit ? +options.limit : 1000;
-            const period = options.period ? +options.period : 3000;
-
-            const date = new Date(options.date) / 1;
+        const date = new Date(options.date) / 1;
 
             for (let k = 0; k < _opt.length; k++) {
-                console.time('iteration');
                 _opt[k].nullify = true;
 
                 let startTime = moment(date).utc().startOf('day').unix() * 1000; 
@@ -95,7 +95,11 @@ module.exports = class TickersStreamService {
 
                             j = j + 2;
                             
-                            me.eventEmitter.emit('tick', _opt[k]);
+                            me.eventEmitter.emit('tick', new TickEvent(
+                                pairs,
+                                strategy,
+                                _opt[k]
+                            ));
                         }
                     }
 
@@ -126,7 +130,6 @@ module.exports = class TickersStreamService {
                 }
 
                 _files.push(me.dataFromMonitoring);
-                console.timeEnd('iteration');
             }
 
             const filename = `${pairs[0].symbol}_${pairs[1].symbol}`;
@@ -137,12 +140,6 @@ module.exports = class TickersStreamService {
             me.csvExportHttp.saveSyncIntoFile(_files, path, fields);
 
             console.log(`Tickers stream service stoped.`);
-
-            setTimeout(async () => {
-                process.exit(0);
-            }, 3000);
-
-        }, me.systemUtil.getConfig('settings.warmup_time', 30000));
     }
     
     parseOptions(options) {
