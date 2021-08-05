@@ -33,7 +33,7 @@ module.exports = class TickersStreamService {
         this.exchange_commission = 0.08;
     }
 
-    init(item, options = {}) {
+    async init(item, options = {}) {
         console.log('Tickers stream service warmup done; starting ticks...');
 
         const me = this;

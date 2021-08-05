@@ -68,8 +68,7 @@ module.exports = {
         } catch (e) {
             throw new Error(`Invalid instance.js file. Please check: ${String(e)}`);
         }
-        console.log('I', instances.symbols[0]);
-        return
+        
         try {
             config = JSON.parse(fs.readFileSync(`${parameters.projectDir}/config/conf.json`, 'utf8'));
         } catch (e) {

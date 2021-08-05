@@ -43,7 +43,6 @@ module.exports = class MeanReversionRepository {
                     resolve(); 
                 })
                 .catch(err => { 
-                    console.log('err');
                     this.logger.error(`Mysql error in table ${this.table}: ${err}`);
                 })
         });

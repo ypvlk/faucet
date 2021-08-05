@@ -28,8 +28,8 @@ module.exports = class Backtesting {
         const item = me.instances.symbols.filter(p => p.pair === pr);
 
         //Жду 30 сек и начинаю доставать тикеры с бд
-        setTimeout(() => {
-            me.tickersStreamService.init(item, options);
+        setTimeout(async () => {
+            await me.tickersStreamService.init(item, options);
 
             setTimeout(async () => {
                 process.exit(0);
