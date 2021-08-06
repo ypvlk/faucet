@@ -4,8 +4,7 @@ module.exports = class BacktestingCommand {
     constructor() {}
 
     execute(options) {
-        services.createBacktestingInstance().start(options, cb);
+        services.createBacktestingInstance().start(options);
         services.getStrategyManager().init();
-        // services.getTickersStreamService().init(options);
     }
 };

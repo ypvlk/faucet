@@ -1,5 +1,12 @@
 const c = module.exports = {}
 
+function splt(pairs, type) {
+    const pair = pairs.split(':');
+    if (type === 'lead') return pair[0].split('.')[1];
+    if (type === 'driven') return pair[1].split('.')[1];
+    return undefined;
+}
+
 c.symbols = [];
 
 let l = [
@@ -11,14 +18,15 @@ let l = [
     'binance_futures.BTCUSDT:binance_futures.HOTUSDT'
 ]
 
+// node main.js backtesting -m development -pr binance_futures.BTCBUSD:binance_futures.ETHBUSD  -d 2021-07-16 -c 0.02 0.03 -g 0.1 0.11 -tp 0.05 -p 3000 -l 1000
 l.forEach((pair) => {
     c.symbols.push({
         'pair': pair,
         'strategy': {
             'name': 'mean_reversion',
             'options': {
-                'lead': pair.split(':')[0],
-                'driven': pair.split(':')[1],
+                'lead': splt(pair, 'lead'),
+                'driven': splt(pair, 'driven'),
                 'correction_indicator_changes': 0.1, //% - значения отклонения новой разницы процентов от старой
                 'get_position_change_tier_1': 0.19, //%
                 'get_position_change_tier_2': 0.6, //%

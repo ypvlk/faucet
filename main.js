@@ -26,7 +26,7 @@ program
     .command('insert-file')
     .description('insert data from file into db')
     .option('-p, --path <path>')
-    .option('-m, --mode <mode>', 'development')
+    .option('-m, --mode <mode>', 'development or production', 'development')
     .action(async options => {
 
         await services.boot(__dirname, options);
@@ -39,20 +39,21 @@ program
 program
     .command('backtesting')
     .description('process testing strategy saved data and params')
+    .option('-m, --mode <mode>', 'development or production', 'development')
     .option('-pr, --pairs <pairs>')
     .option('-d, --date <date>')
     .option('-c, --correction [correction...]')
     .option('-g, --gposition [gposition...]')
     .option('-tp, --tprofit <tprofit>')
-    .option('-p, --period <period>', '3000')
-    .option('-l, --limit <limit>', '100')
+    .option('-p, --period <period>', '', '3000')
+    .option('-l, --limit <limit>', '', '1000')
     .action(async options => {
-
-        if (!options.pr || !options.date || !options.correction || !options.gposition || !options.tprofit) {
+        
+        if (!options.pairs || !options.date || !options.correction || !options.gposition || !options.tprofit) {
             throw new Error('Not all options are given');
         }
-
-        await services.boot(__dirname);
+        
+        await services.boot(__dirname, options);
 
         const cmd = new BacktestingCommand();
         cmd.execute(options);

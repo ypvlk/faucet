@@ -42,16 +42,13 @@ module.exports = class TickersRepository {
         return new Promise(resolve => {
             const parameters = pairs.map(Object.values);
 
-            console.log('param', parameters);
-
-            this.mysqlDB
+            this.mysqlDB(this.table)
                 .timeout(3000, {cancel: true})
-                .from(this.table)
                 .select('*')
                 .whereIn([`${this.table}.exchange`, `${this.table}.symbol`], parameters)
                 .andWhere(`${this.table}.period`, period)
-                .andWhere(`${this.table}.income_at`, '>=', start)
-                .andWhere(`${this.table}.income_at`, '<', end)
+                .andWhere(`${this.table}.income_at`, '>=', startTime)
+                .andWhere(`${this.table}.income_at`, '<', endTime)
                 .limit(limit)
                 .orderBy(`${this.table}.income_at`, 'asc')
                 .then(result => { 

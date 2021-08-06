@@ -1,21 +1,20 @@
+const _ = require('lodash');
 
 module.exports = class Backtesting {
     constructor(
         eventEmitter,
         tickListener,
-        // strategyDatabaseListener,
-
-
         tickersStreamService,
-        instances
+        strategyDatabaseListener,
+        instances,
+        systemUtil
     ) {
         this.eventEmitter = eventEmitter;
         this.tickListener = tickListener;
-        // this.strategyDatabaseListener = strategyDatabaseListener;
-
-
         this.tickersStreamService = tickersStreamService;
+        this.strategyDatabaseListener = strategyDatabaseListener;
         this.instances = instances;
+        this.systemUtil = systemUtil;
     }
 
     start(options = {}) {
@@ -23,14 +22,14 @@ module.exports = class Backtesting {
 
         const me = this;
         const { eventEmitter } = this;
-        const { pr } = options; 
-
-        const item = me.instances.symbols.filter(p => p.pair === pr);
-
+        const { pairs } = options; 
+        
+        const item = me.instances.symbols.filter(p => p.pair === pairs)
+        
         //Жду 30 сек и начинаю доставать тикеры с бд
         setTimeout(async () => {
-            await me.tickersStreamService.init(item, options);
-
+            await me.tickersStreamService.init(_.head(item), options);
+            
             setTimeout(async () => {
                 process.exit(0);
             }, 3000);
@@ -41,7 +40,7 @@ module.exports = class Backtesting {
         });
 
         eventEmitter.on('tick_signal', async function(signalEvent) {
-            // await me.strategyDatabaseListener.saveData(signalEvent); //save strategy data at db 
+            await me.strategyDatabaseListener.saveData(signalEvent); //save strategy data at db 
             // await me.signalDatabaseListener.saveSignal(signalEvent); //save signal at db
             
             // if (signalEvent.signals && signalEvent.signals.length > 0) {

@@ -14,7 +14,8 @@ module.exports = class TickersStreamService {
         tickers,
         backtestingStorage,
         csvExportHttp,
-        projectDir
+        projectDir,
+        tickersRepository
     ) {
         this.eventEmitter = eventEmitter;
         this.logger = logger;
@@ -25,6 +26,7 @@ module.exports = class TickersStreamService {
         this.backtestingStorage = backtestingStorage;
         this.csvExportHttp = csvExportHttp;
         this.projectDir = projectDir;
+        this.tickersRepository = tickersRepository;
 
         this.dataFromMonitoring = {};
 
@@ -41,7 +43,7 @@ module.exports = class TickersStreamService {
         let _files = [];
 
         const { pair, strategy } = item;
-
+        
         const _opt = this.parseOptions(options);
         
         const split_pairs = pair.split(':') ? pair.split(':') : pair; //binance_futures.BTCBUSD:binance_futures.ETHBUSD
@@ -54,92 +56,92 @@ module.exports = class TickersStreamService {
         const period = options.period ? +options.period : 3000;
 
         const date = new Date(options.date) / 1;
+        
+        for (const __opt of _opt) {
+            __opt.nullify = true;
+            
+            let startTime = moment(date).utc().startOf('day').unix() * 1000; 
+            let endTime = moment(date).utc().endOf('day').unix() * 1000; 
 
-            for (let k = 0; k < _opt.length; k++) {
-                _opt[k].nullify = true;
-
-                let startTime = moment(date).utc().startOf('day').unix() * 1000; 
-                let endTime = moment(date).utc().endOf('day').unix() * 1000; 
-
-                let tickersFromDB;
+            let tickersFromDB;
+            
+            do {
+                if (startTime > endTime) break;
                 
-                do {
-                    if (startTime > endTime) break;
-                    
-                    tickersFromDB = await me.tickerExportHttp.getMultipleTickers(pairs, period, startTime, endTime, limit);
-                    
-                    if (tickersFromDB && tickersFromDB.length > pairs.length / 2) {
-                        let j = 0;
+                tickersFromDB = await me.tickerExportHttp.getMultipleTickers(pairs, period, startTime, endTime, limit);
+                
+                if (tickersFromDB && tickersFromDB.length > pairs.length / 2) {
+                    let j = 0;
 
-                        for(let i = 0; i < tickersFromDB.length / pairs.length; i++) {
-                            if (!tickersFromDB[j + 1]) return;
-    
-                            const t = [tickersFromDB[j], tickersFromDB[j+1]];
-    
-                            t.forEach(ticker => {
-                                //update ticker income time
-                                if (ticker.income_at > startTime) startTime = ticker.income_at;
-    
-                                //save at storage
-                                me.tickers.set(new Ticker(
-                                    ticker.exchange,
-                                    ticker.symbol,
-                                    ticker.income_at,
-                                    ticker.bidPrice,
-                                    ticker.bidSize,
-                                    ticker.askPrice,
-                                    ticker.askSize,
-                                    ticker.close
-                                ));
-                            });
+                    for(let i = 0; i < tickersFromDB.length / pairs.length; i++) {
+                        if (!tickersFromDB[j + 1]) break;
+                        
+                        const t = [tickersFromDB[j], tickersFromDB[j+1]];
 
-                            j = j + 2;
-                            
-                            me.eventEmitter.emit('tick', new TickEvent(
-                                pairs,
-                                strategy,
-                                _opt[k]
+                        t.forEach(ticker => {
+                            //update ticker income time
+                            if (ticker.income_at > startTime) startTime = ticker.income_at;
+
+                            //save at storage
+                            me.tickers.set(new Ticker(
+                                ticker.exchange,
+                                ticker.symbol,
+                                ticker.income_at,
+                                ticker.bidPrice,
+                                ticker.bidSize,
+                                ticker.askPrice,
+                                ticker.askSize,
+                                ticker.close
                             ));
-                        }
+                        });
+
+                        j = j + 2;
+                        
+                        me.eventEmitter.emit('tick', new TickEvent(
+                            pairs,
+                            strategy,
+                            __opt
+                        ));
                     }
-
-                    _opt[k].nullify = false;
-
-                } while (tickersFromDB && tickersFromDB.length > limit - 1); 
-
-                //Тут достаем данные с мониторинга в отбект
-                me.dataFromMonitoring = {
-                    pairs: `${pairs[0].symbol}/${pairs[1].symbol}`, 
-                    correction: _opt[k].correction_indicator_changes,
-                    get_pos: _opt[k].get_position_change_tier_1,
-                    take_profit: _opt[k].take_profit_position_change,
-                    e1: '',
-                    all_pos: this.backtestingStorage.getAllPositions(),
-                    plus_pos: this.backtestingStorage.getPositivePositions(),
-                    neg_pos: this.backtestingStorage.getNegativePositions(),
-                    drawdown: this.backtestingStorage.getDrawdown(),
-                    bal: this.backtestingStorage.getBalance(),
-                    bal_comm: this.backtestingStorage.getBalanceWithComm(),
-                    e2: '',
-                    max_pos_profit: this.backtestingStorage.getMaxPositionProfit(),
-                    max_pos_lose: this.backtestingStorage.getMaxPositionLose(),
-                    min_pos_profit: this.backtestingStorage.getMinPositionProfit(),
-                    min_pos_lose: this.backtestingStorage.getMinPositionLose(),
-                    avr_pos_profit: this.backtestingStorage.getAveragePositionProfit(),
-                    avr_pos_lose: this.backtestingStorage.getAveragePositionLose()
                 }
 
-                _files.push(me.dataFromMonitoring);
+                __opt.nullify = false;
+                
+            } while (tickersFromDB && tickersFromDB.length > limit - 1); 
+            
+            //Тут достаем данные с мониторинга в отбект
+            me.dataFromMonitoring = {
+                pairs: `${pairs[0].symbol}/${pairs[1].symbol}`, 
+                correction: __opt.correction_indicator_changes,
+                get_pos: __opt.get_position_change_tier_1,
+                take_profit: __opt.take_profit_position_change,
+                e1: '',
+                all_pos: this.backtestingStorage.getAllPositions(),
+                plus_pos: this.backtestingStorage.getPositivePositions(),
+                neg_pos: this.backtestingStorage.getNegativePositions(),
+                drawdown: this.backtestingStorage.getDrawdown(),
+                bal: this.backtestingStorage.getBalance(),
+                bal_comm: this.backtestingStorage.getBalanceWithComm(),
+                e2: '',
+                max_pos_profit: this.backtestingStorage.getMaxPositionProfit(),
+                max_pos_lose: this.backtestingStorage.getMaxPositionLose(),
+                min_pos_profit: this.backtestingStorage.getMinPositionProfit(),
+                min_pos_lose: this.backtestingStorage.getMinPositionLose(),
+                avr_pos_profit: this.backtestingStorage.getAveragePositionProfit(),
+                avr_pos_lose: this.backtestingStorage.getAveragePositionLose()
             }
 
-            const filename = `${pairs[0].symbol}_${pairs[1].symbol}`;
-            const today = new Date().toISOString().slice(0, 10);
-            const fields = Object.keys(me.dataFromMonitoring);
-            const path = `${me.projectDir}/var/backtesting/${filename}_${today}.csv`;
+            _files.push(me.dataFromMonitoring);
+        }
 
-            me.csvExportHttp.saveSyncIntoFile(_files, path, fields);
+        const filename = `${pairs[0].symbol}_${pairs[1].symbol}`;
+        const today = new Date().toISOString().slice(0, 10);
+        const fields = Object.keys(me.dataFromMonitoring);
+        const path = `${me.projectDir}/var/backtesting/${filename}_${today}`;
 
-            console.log(`Tickers stream service stoped.`);
+        me.csvExportHttp.saveSyncIntoFile(_files, path, fields);
+
+        console.log(`Tickers stream service stoped.`);
     }
     
     parseOptions(options) {

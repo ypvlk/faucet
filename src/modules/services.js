@@ -298,6 +298,7 @@ module.exports = {
             this.getBacktestingStorage(),
             this.getCsvExportHttp(),
             parameters.projectDir,
+            this.getTickersRepository()
         ));
     },
 
@@ -314,8 +315,10 @@ module.exports = {
         return new Backtesting(
             this.getEventEmitter(),
             this.getTickListener(),
+            this.getTickersStreamService(),
             this.getStrategyDatabaseListener(),
-            parameters.projectDir
+            this.getInstances(),
+            this.getSystemUtil()
         );
     },
     

@@ -3,7 +3,7 @@ module.exports = class TickerExportHttp {
         this.tickersRepository = tickersRepository;
     }
 
-    async getMultipleTickers(pairs, period, limit, time) {
-        return this.tickersRepository.getMultipleTickers(pairs, period, limit, time);
+    async getMultipleTickers(pairs, period, startTime, endTime, limit) {
+        return this.tickersRepository.getMultipleTickers(pairs, period, startTime, endTime, limit);
     }
 };
