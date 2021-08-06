@@ -307,6 +307,7 @@ module.exports = {
             this.getSystemUtil(),
             this.getLogger(),
             this.getRequestClient(),
+            this.getCsvExportHttp(),
             parameters.projectDir
         );
     },

@@ -10,12 +10,8 @@ const services = require('./src/modules/services');
 program
     .command('server')
     .description('run http server')
-    .option('-m, --mode <mode>')
+    .option('-m, --mode <mode>', 'development or production', 'development')
     .action(async options => {
-
-        if (options && !options.mode) {
-            throw new Error(`Option mode is allowed`);
-        }
 
         await services.boot(__dirname, options);
         const cmd = new ServerCommand();
@@ -25,7 +21,7 @@ program
 program
     .command('insert-file')
     .description('insert data from file into db')
-    .option('-p, --path <path>')
+    .option('-p, --path <path>', 'path for file who need insert')
     .option('-m, --mode <mode>', 'development or production', 'development')
     .action(async options => {
 

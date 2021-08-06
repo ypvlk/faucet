@@ -30,13 +30,13 @@ module.exports = class CsvExportHttp {
     async downloadMeanReversionTable(leadExchange, leadSymbol, drivenExchange, drivenSymbol, limit) {
         const result = await this.meanReversionRepository.getData(leadExchange, leadSymbol, drivenExchange, drivenSymbol, limit);
         
-        if (!result.length) return [];
-        
-        const fields = Object.keys(_.head(result));
-        // [
-        //     'id', 'lead_exchange', 'lead_symbol', 'lead_change', 'lead_price', 'lead_side', 'lead_tier', 'lead_amount', 'driven_exchange', 'driven_symbol', 'driven_change', 'driven_price', 'adj_driven_change', 'driven_side', 'driven_tier', 'driven_amount', 'delta', 'signal', 'income_at'
-        // ];
-        const csvParser = new Parser({ fields });
-        return csvParser.parse(result);
+        if (result && result.length) {
+            const fields = Object.keys(_.head(result));
+            // [
+            //     'id', 'lead_exchange', 'lead_symbol', 'lead_change', 'lead_price', 'lead_side', 'lead_tier', 'lead_amount', 'driven_exchange', 'driven_symbol', 'driven_change', 'driven_price', 'adj_driven_change', 'driven_side', 'driven_tier', 'driven_amount', 'delta', 'signal', 'income_at'
+            // ];
+            const csvParser = new Parser({ fields });
+            return csvParser.parse(result);
+        }
     }
 };

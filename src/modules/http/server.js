@@ -14,11 +14,13 @@ module.exports = class Http {
         systemUtil,
         logger,
         requestClient,
+        csvExportHttp,
         projectDir
     ) {
         this.systemUtil = systemUtil;
         this.logger = logger;
         this.requestClient = requestClient;
+        this.csvExportHttp = csvExportHttp;
         this.projectDir = projectDir;
     }
 
@@ -139,6 +141,34 @@ module.exports = class Http {
             }
 
             res.json({ success: true, message: 'File uploaded.' })
+        });
+
+        app.get('/mean_reversion/download', async (req, res) => {
+            //localhost:3000/mean_reversion/download?lead=binance_futures.BTCUSDT&driven=binance_futures.LTCUSDT
+            const {
+                lead,
+                driven,
+                limit
+            } = req.query;
+
+            let result = [];
+
+            if (!lead || !driven) res.status(400).end('Error: lead and driven query params are allowed');
+
+            const split_lead = lead.split('.');
+            const leadExchange = split_lead[0];
+            const leadSymbol = split_lead[1];
+
+            const split_driven = driven.split('.');
+            const drivenExchange = split_driven[0];
+            const drivenSymbol = split_driven[1];
+
+            result = await this.csvExportHttp.downloadMeanReversionTable(leadExchange, leadSymbol, drivenExchange, drivenSymbol, limit);
+            
+            res.setHeader("Content-Type", "text/csv");
+            res.setHeader("Content-Disposition", `attachment; filename=${leadSymbol.toLowerCase()}_${drivenSymbol.toLowerCase()}_meanreversion_.csv`);
+
+            res.status(200).end(result);
         });
         
         const ip = this.systemUtil.getConfig('webserver.ip', '0.0.0.0');

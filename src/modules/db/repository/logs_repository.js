@@ -15,8 +15,8 @@ module.exports = class LogsRepository {
         return new Promise(resolve => {
             const created_at = moment().subtract(days, 'days').unix();
 
-            this.mysqlDB
-                .from(this.table)
+            this.mysqlDB(this.table)
+                .timeout(3000, {cancel: true})
                 .where(`${this.table}.created_at`, '<', created_at)
                 .del()
                 .then(result => { 
@@ -33,9 +33,8 @@ module.exports = class LogsRepository {
             const parameters = {};
 
             if (excludes.length > 0) {
-                this.mysqlDB
+                this.mysqlDB(this.table)
                     .timeout(3000, {cancel: true})
-                    .from(this.table)
                     .select('*')
                     .whereNotIn(`${this.table}.level`, excludes)
                     .limit(limit)
@@ -47,9 +46,8 @@ module.exports = class LogsRepository {
                         this.logger.error(`Mysql error in table ${this.table}: ${err}`)
                     })
             } else {
-                this.mysqlDB
+                this.mysqlDB(this.table)
                     .timeout(3000, {cancel: true})
-                    .from(this.table)
                     .select('*')
                     .limit(limit)
                     .orderBy(`${this.table}.created_at`, 'desc')
@@ -65,9 +63,8 @@ module.exports = class LogsRepository {
 
     getLevels() {
         return new Promise(resolve => {
-            this.mysqlDB
+            this.mysqlDB(this.table)
                 .timeout(3000, {cancel: true})
-                .from(this.table)
                 .select(`${this.table}.level`)
                 .groupBy('level')
                 .then(result => { 

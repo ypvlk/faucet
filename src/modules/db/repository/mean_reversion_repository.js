@@ -48,12 +48,11 @@ module.exports = class MeanReversionRepository {
         });
     }
 
-    getData(leadExchange, leadSymbol, drivenExchange, drivenSymbol, limit = 30000) {
+    getData(leadExchange, leadSymbol, drivenExchange, drivenSymbol, limit = 100000) {
         return new Promise(resolve => {
 
-            this.mysqlDB
+            this.mysqlDB(this.table)
                 .timeout(3000, {cancel: true})
-                .from(this.table)
                 .select('*')
                 .where({
                     lead_exchange: leadExchange,
@@ -65,7 +64,7 @@ module.exports = class MeanReversionRepository {
                 })
                 .limit(limit)
                 .then(result => { 
-                    if (result && result.length) resolve(result);
+                    resolve(result);
                 })
                 .catch(err => { 
                     this.logger.error(`Mysql error in table ${this.table}: ${err}`)
