@@ -144,7 +144,7 @@ module.exports = class Http {
         });
 
         app.get('/mean_reversion/download', async (req, res) => {
-            //localhost:3000/mean_reversion/download?lead=binance_futures.BTCUSDT&driven=binance_futures.LTCUSDT
+            //localhost:3000/mean_reversion/download?lead=binance_futures.BTCBUSD&driven=binance_futures.ETHBUSD
             const {
                 lead,
                 driven,
