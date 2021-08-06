@@ -31,6 +31,7 @@ const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
 const RequestClient = require('./system/request_client');
 const Queue = require('./system/queue');
+const Throttler = require('./system/queue');
 
 const Tickers = require('../storage/tickers');
 const BacktestingStorage = require('../storage/backtesting');
@@ -55,6 +56,7 @@ let tickers;
 let queue;
 let tickerExportHttp;
 let csvExportHttp;
+let throttler;
 
 const parameters = {};
 
@@ -127,6 +129,16 @@ module.exports = {
         }
     
         return (queue = new Queue());
+    },
+
+    getThrottler: function() {
+        if (throttler) {
+            return throttler;
+        }
+    
+        return (throttler = new Throttler(
+            this.getLogger(),
+        ));
     },
 
     getLogger: function() {
@@ -324,7 +336,6 @@ module.exports = {
     },
     
     createFaucetInstance: function() {
-        this.getStrategyManager().init();
 
         return new Faucet(
             this.getSystemUtil(),
