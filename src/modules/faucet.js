@@ -16,6 +16,13 @@ module.exports = class Faucet {
         const me = this;
         const { eventEmitter } = this;
 
+        //В этом классе будет логи отслеживания событий для рассчета 
+        //А также кроны для:
+        //1.Достаю со списка серверов все файлы
+        //2.Вставляю все файлы в базу и удаляю их
+        //3.Как то создаю очередь на рассчет по стратегиям которые создадут файлы
+        //4.Выберу например какое то время это будет техническое время. 
+
         // setTimeout(async () => {
         //     // console.log(`Got: ${this.tickerLength} tickers`);
         //     console.log('Backfill Tickers module finish');

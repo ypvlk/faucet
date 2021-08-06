@@ -15,7 +15,6 @@ module.exports = class TickersStreamService {
         backtestingStorage,
         csvExportHttp,
         projectDir,
-        tickersRepository
     ) {
         this.eventEmitter = eventEmitter;
         this.logger = logger;
@@ -26,7 +25,6 @@ module.exports = class TickersStreamService {
         this.backtestingStorage = backtestingStorage;
         this.csvExportHttp = csvExportHttp;
         this.projectDir = projectDir;
-        this.tickersRepository = tickersRepository;
 
         this.dataFromMonitoring = {};
 

@@ -10,6 +10,7 @@ const knex = require('knex');
 
 const Http = require('./http/server');
 const Backtesting = require('./backtesting/backtesting');
+const Faucet = require('./faucet');
 
 const InsertFileService = require('./insert_file');
 const TickersStreamService = require('./backtesting/tickers_stream_service');
@@ -297,8 +298,7 @@ module.exports = {
             this.getTickers(),
             this.getBacktestingStorage(),
             this.getCsvExportHttp(),
-            parameters.projectDir,
-            this.getTickersRepository()
+            parameters.projectDir
         ));
     },
 
@@ -323,13 +323,13 @@ module.exports = {
         );
     },
     
+    createFaucetInstance: function() {
+        this.getStrategyManager().init();
 
-    // createFaucetInstance: function() {
-    // this.getStrategyManager().init();
-    //     return new Http(
-    //         this.getSystemUtil(),
-    //         this.getLogger(),
-    //         parameters.projectDir
-    //     );
-    // },
+        return new Faucet(
+            this.getSystemUtil(),
+            this.getLogger(),
+            parameters.projectDir
+        );
+    },
 }

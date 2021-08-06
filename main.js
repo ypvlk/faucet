@@ -3,9 +3,21 @@ const program = require('commander');
 const ServerCommand = require('./src/command/server');
 const InsertFileCommand = require('./src/command/insert_file');
 const BacktestingCommand = require('./src/command/backtesting');
+const Faucet = require('./src/modules/faucet');
 
 // init
 const services = require('./src/modules/services');
+
+program
+    .command('faucet')
+    .description('run faucet module')
+    .option('-m, --mode <mode>', 'development or production', 'development')
+    .action(async options => {
+
+        await services.boot(__dirname, options);
+        const cmd = new Faucet();
+        cmd.execute(options);
+    });
 
 program
     .command('server')
