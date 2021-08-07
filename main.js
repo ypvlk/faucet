@@ -1,9 +1,9 @@
 const program = require('commander');
 
+const Faucet = require('./src/command/faucet');
 const ServerCommand = require('./src/command/server');
 const InsertFileCommand = require('./src/command/insert_file');
 const BacktestingCommand = require('./src/command/backtesting');
-const Faucet = require('./src/modules/faucet');
 const UploadFileCommand = require('./src/command/upload_file');
 
 // init
@@ -11,7 +11,7 @@ const services = require('./src/modules/services');
 
 program
     .command('faucet')
-    .description('run faucet module')
+    .description('run faucet module. It\'s a main module')
     .option('-m, --mode <mode>', 'development or production', 'development')
     .action(async options => {
 
@@ -56,9 +56,9 @@ program
 
         await services.boot(__dirname, options);
         const cmd = new UploadFileCommand(options);
-        cmd.execute(options, function() {
-            process.exit(0);
-        });
+        await cmd.execute(options);
+
+        process.exit(0);
     });
 
 program

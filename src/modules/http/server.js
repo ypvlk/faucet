@@ -128,9 +128,9 @@ module.exports = class Http {
                 'Authorization': 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
             }
 
-            this.uploadFileService.uploadOneFileFromServer({url, path, headers, queries}, function() {
-                res.json({ success: true, message: 'File uploaded.' })
-            });
+            await this.uploadFileService.uploadOneFileFromServer({url, path, headers, queries});
+
+            res.json({ success: true, message: 'File uploaded.' })
         });
 
         app.get('/mean_reversion/download', async (req, res) => {

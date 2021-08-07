@@ -13,7 +13,7 @@ module.exports = class UploadFileService {
         this.projectDir = projectDir;
     }
 
-    uploadOneFileFromServer(options = {}, cb) {
+    async uploadOneFileFromServer(options = {}) {
         const { 
             path,
             url,
@@ -21,9 +21,9 @@ module.exports = class UploadFileService {
             queries
         } = options;
 
-        if (!url || !path || !cb || typeof cb !== 'function') {
+        if (!url || !path) {
             me.logger.error(`Upload file empty params`);
-            cb();
+            return undefined;
         }
 
         const me = this;
@@ -44,12 +44,12 @@ module.exports = class UploadFileService {
             me.logger.info(`File from: ${url} uploads success`);
             console.log(`File from: ${url} uploads success`);
 
-            cb();
+            return path;
         }
 
         me.logger.info(`File: ${path} already maked.`);
         console.log(`File: ${path} already maked.`);
 
-        cb();
+        return undefined;
     }
 }

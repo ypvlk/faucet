@@ -10,7 +10,7 @@ const knex = require('knex');
 
 const Http = require('./http/server');
 const Backtesting = require('./backtesting/backtesting');
-const Faucet = require('./faucet');
+const Faucet = require('./faucet/faucet');
 
 const InsertFileService = require('./insert_file');
 const TickersStreamService = require('./backtesting/tickers_stream_service');
@@ -27,6 +27,8 @@ const CsvExportHttp = require('./http/controller/csv_export_http');
 const LogsRepository = require('./db/repository/logs_repository');
 const TickersRepository = require('./db/repository/tickers_repository');
 const MeanReversionRepository = require('./db/repository/mean_reversion_repository');
+
+const UploadFileCron = require('./faucet/upload_file_cron');
 
 const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
@@ -59,6 +61,7 @@ let tickerExportHttp;
 let csvExportHttp;
 let throttler;
 let uploadFileService;
+let uploadFileCron;
 
 const parameters = {};
 
@@ -263,6 +266,18 @@ module.exports = {
         ));
     },
 
+    getUploadFileCron: function() {
+        if (uploadFileCron) {
+            return uploadFileCron;
+        }
+    
+        return (uploadFileCron = new UploadFileCron(
+            this.getSystemUtil(),
+            this.getLogger(),
+            parameters.projectDir
+        ));
+    },
+
     getStrategyDatabaseListener: function() {
         if (strategyDatabaseListener) {
             return strategyDatabaseListener;
@@ -358,6 +373,7 @@ module.exports = {
             this.getLogger(),
             this.getThrottler(),
             this.getSystemUtil(),
+            this.getUploadFileCron(),
             parameters.projectDir
         );
     },
