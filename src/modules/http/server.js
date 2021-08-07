@@ -15,12 +15,14 @@ module.exports = class Http {
         logger,
         requestClient,
         csvExportHttp,
+        uploadFileService,
         projectDir
     ) {
         this.systemUtil = systemUtil;
         this.logger = logger;
         this.requestClient = requestClient;
         this.csvExportHttp = csvExportHttp;
+        this.uploadFileService = uploadFileService;
         this.projectDir = projectDir;
     }
 
@@ -121,26 +123,14 @@ module.exports = class Http {
             const path = `${this.projectDir}/var/tickers/${host}_${date}_tickers.csv`;
 
             const url = `http://${host}/tickers/download`;
-            const options = { date: date, period: period, limit: limit };
+            const queries = { date: date, period: period, limit: limit };
             const headers = {
                 'Authorization': 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
             }
 
-            try {
-                fs.accessSync(path, fs.constants.F_OK);
-            } catch (err) {
-                const data = await this.requestClient.executeUploadRequest(url, null, options, null, headers);
-
-                const fileStream = fs.createWriteStream(path);
-                
-                await new Promise((resolve, reject) => {
-                    data.body.pipe(fileStream);
-                    data.body.on('error', reject);
-                    fileStream.on('finish', resolve);
-                });
-            }
-
-            res.json({ success: true, message: 'File uploaded.' })
+            this.uploadFileService.uploadOneFileFromServer({url, path, headers, queries}, function() {
+                res.json({ success: true, message: 'File uploaded.' })
+            });
         });
 
         app.get('/mean_reversion/download', async (req, res) => {

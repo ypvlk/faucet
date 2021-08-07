@@ -3,11 +3,15 @@ module.exports = class Faucet {
     constructor(
         eventEmitter,
         logger,
-        systemUtil
+        throttler,
+        systemUtil,
+        projectDir
     ) {
         this.eventEmitter = eventEmitter;
         this.logger = logger;
+        this.throttler = throttler;
         this.systemUtil = systemUtil;
+        this.projectDir = projectDir;
     }
 
     start() {
@@ -31,7 +35,11 @@ module.exports = class Faucet {
         // }, time);
 
         setInterval(async () => {
-            // if (new Date().getUTCHours === 23 &&)
+            const date = new Date();    
+            if (date.getUTCHours === 23 && date.getUTCMinutes() > 50 && date.getUTCMinutes() < 58) {
+                //It's time a faucet tickers from skinrobot servers
+                
+            }
         }, 1000 * 60 * 5);
 
         eventEmitter.on('tick', function(options) {

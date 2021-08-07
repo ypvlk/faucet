@@ -14,6 +14,7 @@ const Faucet = require('./faucet');
 
 const InsertFileService = require('./insert_file');
 const TickersStreamService = require('./backtesting/tickers_stream_service');
+const UploadFileService = require('./upload_file');
 
 const StrategyManager = require('./strategy/strategy_manager');
 
@@ -57,6 +58,7 @@ let queue;
 let tickerExportHttp;
 let csvExportHttp;
 let throttler;
+let uploadFileService;
 
 const parameters = {};
 
@@ -248,6 +250,19 @@ module.exports = {
         ));
     },
 
+    getUploadFileService: function() {
+        if (uploadFileService) {
+            return uploadFileService;
+        }
+    
+        return (uploadFileService = new UploadFileService(
+            this.getSystemUtil(),
+            this.getLogger(),
+            this.getRequestClient(),
+            parameters.projectDir
+        ));
+    },
+
     getStrategyDatabaseListener: function() {
         if (strategyDatabaseListener) {
             return strategyDatabaseListener;
@@ -320,6 +335,7 @@ module.exports = {
             this.getLogger(),
             this.getRequestClient(),
             this.getCsvExportHttp(),
+            this.getUploadFileService(),
             parameters.projectDir
         );
     },
@@ -336,10 +352,12 @@ module.exports = {
     },
     
     createFaucetInstance: function() {
-
+    
         return new Faucet(
-            this.getSystemUtil(),
+            this.getEventEmitter(),
             this.getLogger(),
+            this.getThrottler(),
+            this.getSystemUtil(),
             parameters.projectDir
         );
     },

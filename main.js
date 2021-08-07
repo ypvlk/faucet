@@ -4,6 +4,7 @@ const ServerCommand = require('./src/command/server');
 const InsertFileCommand = require('./src/command/insert_file');
 const BacktestingCommand = require('./src/command/backtesting');
 const Faucet = require('./src/modules/faucet');
+const UploadFileCommand = require('./src/command/upload_file');
 
 // init
 const services = require('./src/modules/services');
@@ -39,6 +40,22 @@ program
 
         await services.boot(__dirname, options);
         const cmd = new InsertFileCommand(options);
+        cmd.execute(options, function() {
+            process.exit(0);
+        });
+    });
+
+program
+    .command('upload-file')
+    .description('upload file from another server')
+    .option('-p, --path <path>', 'path for file who need insert')
+    .option('-u, --url <url>', 'servers url')
+    .option('-q, --queries <queries>', 'query params')
+    .option('-m, --mode <mode>', 'development or production', 'development')
+    .action(async options => {
+
+        await services.boot(__dirname, options);
+        const cmd = new UploadFileCommand(options);
         cmd.execute(options, function() {
             process.exit(0);
         });
