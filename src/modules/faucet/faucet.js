@@ -37,7 +37,7 @@ module.exports = class Faucet {
             //Также нужно сделать запросы http такие же
             //И может команды
 
-            
+            //check commit
         }, 1000 * 60 * 5); //* 60 * 5
 
         eventEmitter.on('tick', function(options) {
