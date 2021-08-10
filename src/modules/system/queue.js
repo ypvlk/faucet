@@ -10,8 +10,8 @@ module.exports = class {
 
         this.queue2 = new Queue({
             concurrent: 2,
-            interval: 1120,
-            start: true
+            interval: 6000,
+            start: false
         });
 
         this.queue3 = new Queue({

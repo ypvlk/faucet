@@ -124,9 +124,7 @@ module.exports = class Http {
 
             const url = `http://${host}/tickers/download`;
             const queries = { date: date, period: period, limit: limit };
-            const headers = {
-                'Authorization': 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
-            }
+            const headers = {};
 
             await this.uploadFileService.uploadOneFileFromServer({url, path, headers, queries});
 

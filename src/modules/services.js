@@ -34,7 +34,7 @@ const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
 const RequestClient = require('./system/request_client');
 const Queue = require('./system/queue');
-const Throttler = require('./system/queue');
+const Throttler = require('./system/throttler');
 
 const Tickers = require('../storage/tickers');
 const BacktestingStorage = require('../storage/backtesting');
@@ -274,6 +274,9 @@ module.exports = {
         return (uploadFileCron = new UploadFileCron(
             this.getSystemUtil(),
             this.getLogger(),
+            this.getQueue(),
+            this.getUploadFileService(),
+            this.getThrottler(),
             parameters.projectDir
         ));
     },

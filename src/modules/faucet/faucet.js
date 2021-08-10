@@ -22,27 +22,21 @@ module.exports = class Faucet {
         const me = this;
         const { eventEmitter } = this;
 
-        //В этом классе будет логи отслеживания событий для рассчета 
-        //А также кроны для:
-        //1.Достаю со списка серверов все файлы
-        //2.Вставляю все файлы в базу и удаляю их
-        //3.Как то создаю очередь на рассчет по стратегиям которые создадут файлы
-        //4.Выберу например какое то время это будет техническое время. 
-
-        // setTimeout(async () => {
-        //     // console.log(`Got: ${this.tickerLength} tickers`);
-        //     console.log('Backfill Tickers module finish');
-
-        //     process.exit(0);
-        // }, time);
-
         setInterval(async () => {
             const date = new Date();    
-            // if (date.getUTCHours === 23 && date.getUTCMinutes() > 50 && date.getUTCMinutes() < 59) {
+            if (date.getUTCHours === 23 && date.getUTCMinutes() > 50 && date.getUTCMinutes() < 59) {
                 //It's time a faucet tickers from skinrobot servers
                 await me.uploadFileCron.start();
-            // }
-        }, 1000); //* 60 * 5
+            }
+
+            //TODO
+            //Дальше нужно сделать сохранения всех файлов в папке тикерс в базу по очереди
+
+            //TODO 
+            //Дальше нужно сделать расчет стратегий и сохранения результатов в файл
+            //Также нужно сделать запросы http такие же
+            //И может команды
+        }, 1000 * 60 * 5); //* 60 * 5
 
         eventEmitter.on('tick', function(options) {
             // me.tickListener.onTick(options);

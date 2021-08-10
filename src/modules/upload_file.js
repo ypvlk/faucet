@@ -13,43 +13,56 @@ module.exports = class UploadFileService {
         this.projectDir = projectDir;
     }
 
-    async uploadOneFileFromServer(options = {}) {
-        const { 
-            path,
-            url,
-            headers,
-            queries
-        } = options;
+    uploadOneFileFromServer(options = {}) {
+        return new Promise(async (resolve, reject) => {
+            const { 
+                path,
+                url,
+                headers,
+                queries
+            } = options;
+    
+            if (!url || !path) {
+                this.logger.error(`Upload file empty params`);
+                return reject();
+            }
 
-        if (!url || !path) {
-            me.logger.error(`Upload file empty params`);
-            return undefined;
-        }
+            const username = this.systemUtil.getConfig('webserver.username');
+            const password = this.systemUtil.getConfig('webserver.password');
 
-        const me = this;
+            const new_headers = {
+                'Authorization': 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
+            }
 
-        try {
-            fs.accessSync(path, fs.constants.F_OK);
-        } catch (err) {
-            const data = await me.requestClient.executeUploadRequest(url, null, queries, null, headers);
+            const me = this;
 
-            const fileStream = fs.createWriteStream(path);
-            
-            await new Promise((resolve, reject) => {
-                data.body.pipe(fileStream);
-                data.body.on('error', reject);
-                fileStream.on('finish', resolve);
-            });
-
-            me.logger.info(`File from: ${url} uploads success`);
-            console.log(`File from: ${url} uploads success`);
-
-            return path;
-        }
-
-        me.logger.info(`File: ${path} already maked.`);
-        console.log(`File: ${path} already maked.`);
-
-        return undefined;
+            try {
+                fs.accessSync(path, fs.constants.F_OK);
+            } catch (err) {
+                const data = await me.requestClient.executeUploadRequest(url, null, queries, null, {...new_headers, ...headers});
+                if (!data) {
+                    me.logger.info(`File from: ${url} uploads fail. Data is: ${data}`);
+                    return reject();
+                }
+                
+                const fileStream = fs.createWriteStream(path);
+                
+                await new Promise((resolve, reject) => {
+                    data.body.pipe(fileStream);
+                    data.body.on('error', reject);
+                    fileStream.on('finish', resolve);
+                });
+    
+                me.logger.info(`File from: ${url} uploads success`);
+                console.log(`File from: ${url} uploads success`);
+    
+                return resolve();
+            }
+    
+            me.logger.info(`File: ${path} already maked.`);
+            console.log(`File: ${path} already maked.`);
+    
+            return resolve();
+        });
     }
 }
