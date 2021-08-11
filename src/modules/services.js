@@ -354,6 +354,7 @@ module.exports = {
             this.getRequestClient(),
             this.getCsvExportHttp(),
             this.getUploadFileService(),
+            this.getInsertFileService(),
             parameters.projectDir
         );
     },

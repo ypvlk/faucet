@@ -16,6 +16,7 @@ module.exports = class Http {
         requestClient,
         csvExportHttp,
         uploadFileService,
+        insertFileService,
         projectDir
     ) {
         this.systemUtil = systemUtil;
@@ -23,6 +24,7 @@ module.exports = class Http {
         this.requestClient = requestClient;
         this.csvExportHttp = csvExportHttp;
         this.uploadFileService = uploadFileService;
+        this.insertFileService = insertFileService;
         this.projectDir = projectDir;
     }
 
@@ -129,6 +131,20 @@ module.exports = class Http {
             await this.uploadFileService.uploadOneFileFromServer({url, path, headers, queries});
 
             res.json({ success: true, message: 'File uploaded.' })
+        });
+
+        app.get('/tickers/insert', async (req, res) => {
+            //localhost:3000/tickers/insert?pack_count=500&path=var/tickers/command_test_tickers.csv
+            const {
+                path,
+                pack_count
+            } = req.query;
+
+            if (!path || !pack_count) res.status(400).end('Error: path and pack_count query params are allowed');
+        
+            await this.insertFileService.insertOneFile({path, pack_count});
+
+            res.json({ success: true, message: 'File insered.' })
         });
 
         app.get('/mean_reversion/download', async (req, res) => {

@@ -35,14 +35,15 @@ program
     .command('insert-file')
     .description('insert data from file into db')
     .option('-p, --path <path>', 'path for file who need insert')
+    .option('-c, --pack_count <pack_count>', 'count how much rows insert for one tick', '500')
     .option('-m, --mode <mode>', 'development or production', 'development')
     .action(async options => {
 
         await services.boot(__dirname, options);
         const cmd = new InsertFileCommand(options);
-        cmd.execute(options, function() {
-            process.exit(0);
-        });
+        await cmd.execute(options);
+
+        process.exit(0);
     });
 
 program
