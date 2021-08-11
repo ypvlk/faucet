@@ -31,11 +31,13 @@ module.exports = class Faucet {
             
             if (hours === 23 && minutes >= 47 && minutes <= 50) {
                 //It's time a faucet tickers from skinrobot servers
+                me.logger.info('It\'s time a faucet tickers from skinrobot servers');
                 await me.uploadFileCron.start();
             }
             
             if (hours === 0 && minutes >= 5 && minutes <= 30) {
                 //It's time a insert tickers from files into db
+                me.logger.info('It\'s time a insert tickers from files into db');
                 await me.insertFileCron.start();
             }
 
