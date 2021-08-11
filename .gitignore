@@ -8,6 +8,8 @@
 #
 /config/conf.json
 
+docker-compose.yml
+
 #
 /node_modules
 /var/tickers/*.csv

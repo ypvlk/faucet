@@ -47,7 +47,7 @@ module.exports = class Faucet {
             //И может команды
 
             //check commit
-        }, 1000 * 60 * 1); //* 60 * 5
+        }, me.systemUtil.getConfig('faucet.faucet_time_interval'), 1000 * 60);
 
         eventEmitter.on('tick', function(options) {
             // me.tickListener.onTick(options);

@@ -6,7 +6,7 @@ module.exports = class {
 
         this.queue = new Queue({
             concurrent: 1,
-            interval: 1000 * 60, // every seconds; include some random ms
+            interval: 1000 * 60, // every minutes;
             start: true
         })
         .on('resolve', key => {
