@@ -22,7 +22,7 @@ module.exports = {
             min: 1,
             max: 2 ///connections = ((core_count * 2) + effective_spindle_count)
         },
-        debug: true, //Включает вывод инфы по запросам в консоль
+        // debug: true, //Включает вывод инфы по запросам в консоль
     },
 
 

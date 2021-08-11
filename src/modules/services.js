@@ -29,6 +29,7 @@ const TickersRepository = require('./db/repository/tickers_repository');
 const MeanReversionRepository = require('./db/repository/mean_reversion_repository');
 
 const UploadFileCron = require('./faucet/upload_file_cron');
+const InsertFileCron = require('./faucet/insert_file_cron');
 
 const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
@@ -62,6 +63,7 @@ let csvExportHttp;
 let throttler;
 let uploadFileService;
 let uploadFileCron;
+let insertFileCron;
 
 const parameters = {};
 
@@ -281,6 +283,21 @@ module.exports = {
         ));
     },
 
+    getInsertFileCron: function() {
+        if (insertFileCron) {
+            return insertFileCron;
+        }
+    
+        return (insertFileCron = new InsertFileCron(
+            this.getSystemUtil(),
+            this.getLogger(),
+            this.getQueue(),
+            this.getInsertFileService(),
+            this.getThrottler(),
+            parameters.projectDir
+        ));
+    },
+
     getStrategyDatabaseListener: function() {
         if (strategyDatabaseListener) {
             return strategyDatabaseListener;
@@ -378,6 +395,7 @@ module.exports = {
             this.getThrottler(),
             this.getSystemUtil(),
             this.getUploadFileCron(),
+            this.getInsertFileCron(),
             parameters.projectDir
         );
     },

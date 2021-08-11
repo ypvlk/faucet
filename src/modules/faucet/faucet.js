@@ -6,6 +6,7 @@ module.exports = class Faucet {
         throttler,
         systemUtil,
         uploadFileCron,
+        insertFileCron,
         projectDir
     ) {
         this.eventEmitter = eventEmitter;
@@ -13,6 +14,7 @@ module.exports = class Faucet {
         this.throttler = throttler;
         this.systemUtil = systemUtil;
         this.uploadFileCron = uploadFileCron;
+        this.insertFileCron = insertFileCron;
         this.projectDir = projectDir;
     }
 
@@ -23,14 +25,19 @@ module.exports = class Faucet {
         const { eventEmitter } = this;
 
         setInterval(async () => {
-            const date = new Date();    
-            if (date.getUTCHours === 23 && date.getUTCMinutes() > 50 && date.getUTCMinutes() < 59) {
+            const date = new Date();  
+            const hours = date.getUTCHours();
+            const minutes = date.getUTCMinutes();
+            
+            if (hours === 23 && minutes >= 47 && minutes <= 50) {
                 //It's time a faucet tickers from skinrobot servers
                 await me.uploadFileCron.start();
             }
-
-            //TODO
-            //Дальше нужно сделать сохранения всех файлов в папке тикерс в базу по очереди
+            
+            if (hours === 0 && minutes >= 5 && minutes <= 30) {
+                //It's time a insert tickers from files into db
+                await me.insertFileCron.start();
+            }
 
             //TODO 
             //Дальше нужно сделать расчет стратегий и сохранения результатов в файл
@@ -38,7 +45,7 @@ module.exports = class Faucet {
             //И может команды
 
             //check commit
-        }, 1000 * 60 * 5); //* 60 * 5
+        }, 1000 * 60 * 1); //* 60 * 5
 
         eventEmitter.on('tick', function(options) {
             // me.tickListener.onTick(options);
