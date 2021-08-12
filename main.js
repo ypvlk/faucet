@@ -14,7 +14,7 @@ program
     .description('run faucet module. It\'s a main module')
     .option('-m, --mode <mode>', 'development or production', 'development')
     .action(async options => {
-
+        
         await services.boot(__dirname, options);
         const cmd = new Faucet();
         cmd.execute(options);

@@ -2,8 +2,8 @@
     "apps" : [
         {
         "name"        : "faucet-worker",
-        "script"      : "npm",
-        "args"        : "start",
+        "script"      : "./main.js",
+        "args"        : "faucet -m production",
         "exec_mode"   : "cluster",
         "interpreter_args": "--max-old-space-size=512", 
         "instances" : 1,
@@ -11,10 +11,7 @@
         "merge_logs" :true,
         "ignore_watch": ["node_modules", "logs", "var", "web"],
         "max_memory_restart": "512M",
-        "pid_file"   : "logs/info-pm2.log",
-        "env": {
-            "NODE_ENV": "production"
-        }
+        "pid_file"   : "logs/info-pm2.log"
     }
     ]
 }
