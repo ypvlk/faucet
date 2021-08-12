@@ -24,6 +24,7 @@ module.exports = class InsertFileCron {
 
         fs.readdirSync(folder).forEach(file => {
             const check_file = file.split('.')[1];
+            
             if (check_file === 'csv') {
                 const key = 'insert_file_cron' + '_' + file;
                 const options = {

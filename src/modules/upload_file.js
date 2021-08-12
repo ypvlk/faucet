@@ -41,7 +41,7 @@ module.exports = class UploadFileService {
             } catch (err) {
                 const data = await me.requestClient.executeUploadRequest(url, null, queries, null, {...new_headers, ...headers});
                 if (!data) {
-                    me.logger.info(`File from: ${url} uploads fail. Data is: ${data}`);
+                    me.logger.error(`File from: ${url} uploads fail. Data is: ${data}`);
                     return reject();
                 }
                 
@@ -53,13 +53,13 @@ module.exports = class UploadFileService {
                     fileStream.on('finish', resolve);
                 });
     
-                me.logger.info(`File from: ${url} uploads success`);
+                me.logger.debug(`File from: ${url} uploads success`);
                 console.log(`File from: ${url} uploads success`);
     
                 return resolve();
             }
     
-            me.logger.info(`File: ${path} already maked.`);
+            me.logger.debug(`File: ${path} already maked.`);
             console.log(`File: ${path} already maked.`);
     
             return resolve();

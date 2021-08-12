@@ -71,7 +71,7 @@ module.exports = class LogsRepository {
                     if (result && result.length) resolve(result.map(r => r.level));
                 })
                 .catch(err => { 
-                    this.logger.error(`Mysql error in table ${this.table}: ${err}`)
+                    this.logger.error(`Mysql error in table ${this.table}: ${err}`);
                 })
         });
     }

@@ -54,7 +54,7 @@ module.exports = class UploadFileCron {
         }
 
         if (retry > 0) {
-            this.logger.info(`Retry: (${retry}) upload files`);
+            this.logger.debug(`Retry: (${retry}) upload files`);
         }
         
         let result;

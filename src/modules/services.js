@@ -94,6 +94,9 @@ module.exports = {
                 throw new Error(`Knex test is failed, please check ${String(e)}`);
             } 
         }
+
+        this.getLogger().info(`MySQL connect to <${process.env.DB_NAME}> db on host: ${process.env.DB_HOST}:${process.env.DB_PORT} with user: ${process.env.DB_USER} successful`);
+        console.log(`MySQL connect to <${process.env.DB_NAME}> db on host: ${process.env.DB_HOST}:${process.env.DB_PORT} with user: ${process.env.DB_USER} successful`);
     },
 
     getConfig: () => {
@@ -396,6 +399,7 @@ module.exports = {
             this.getSystemUtil(),
             this.getUploadFileCron(),
             this.getInsertFileCron(),
+            this.getLogsRepository(),
             parameters.projectDir
         );
     },
