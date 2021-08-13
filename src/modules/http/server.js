@@ -111,6 +111,39 @@ module.exports = class Http {
             })
         });
 
+        app.get('/check-servers', async (req, res) => {
+
+            const hosts_keys = this.systemUtil.getConfig('skinrobots.hosts');
+            const hosts_ips = Object.keys(hosts_keys);
+
+            let promises = [];
+            let result;
+
+            const headers = {
+                'Authorization': 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
+            }
+
+            hosts_ips.forEach(host => {
+                const url = `http://${host}/servertime`;            
+                promises.push(this.requestClient.executeGETRequest(url, {}, headers));
+            });
+
+            try {
+                result = await Promise.allSettled(promises);
+            } catch(e) {
+                this.logger.error(`Check servers promise allsettled error: ${e}`);
+                res.status(400).end(`Check servers promise allsettled error: ${e}`);
+            }
+
+            const respone = {};
+            
+            result.forEach((p, index) => {
+                respone[hosts_ips[index]] = p.status === 'fulfilled' ? 'OK' : 'FAIL';
+            });
+
+            res.json(respone)
+        });
+
         app.get('/tickers/upload', async (req, res) => {
             //localhost:3000/tickers/upload?date=2021-08-04&period=3000&limit=1000&host=167.172.44.124:3000
             const {
