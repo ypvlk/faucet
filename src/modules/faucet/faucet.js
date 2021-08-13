@@ -23,6 +23,7 @@ module.exports = class Faucet {
     }
 
     start() {
+        this.logger.debug('Faucet module start...');
         console.log('Faucet module start...');
 
         const me = this;
@@ -37,12 +38,13 @@ module.exports = class Faucet {
 
         const message = `Start: faucet module - ${os.hostname()} - ${os.platform()} - ${moment().format()}`;
         
+        me.logger.info(message);
         console.log('message', message);
 
         setInterval(async () => {
             await me.logsRepository.cleanOldLogEntries();
             
-            me.logger.debug('Cleanup old entries');
+            me.logger.info('Cleanup old entries');
         }, 86455000 * 1); //* 3 days
 
         setInterval(async () => {

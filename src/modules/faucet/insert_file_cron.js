@@ -18,6 +18,8 @@ module.exports = class InsertFileCron {
     }
 
     async start() {
+        this.logger.debug(`Insert file cron start`);
+
         const me = this;
 
         const folder = `${this.projectDir}/var/tickers/`;

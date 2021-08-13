@@ -23,7 +23,7 @@ module.exports = class UploadFileService {
             } = options;
     
             if (!url || !path) {
-                this.logger.error(`Upload file empty params`);
+                this.logger.error(`Upload file empty params, url: ${url}, path: ${path}`);
                 reject();
             }
 
@@ -53,7 +53,7 @@ module.exports = class UploadFileService {
                     fileStream.on('finish', resolve);
                 });
     
-                me.logger.debug(`File from: ${url} uploads success`);
+                me.logger.info(`File from: ${url} uploads success`);
                 console.log(`File from: ${url} uploads success`);
     
                 resolve();

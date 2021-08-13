@@ -19,6 +19,8 @@ module.exports = class UploadFileCron {
     }
 
     async start() {
+        this.logger.debug(`Upload file cron start`);
+
         const me = this;
 
         const hosts_keys = me.systemUtil.getConfig('skinrobots.hosts');
@@ -54,7 +56,7 @@ module.exports = class UploadFileCron {
         }
 
         if (retry > 0) {
-            this.logger.debug(`Retry: (${retry}) upload files`);
+            this.logger.info(`Retry: (${retry}) upload files`);
         }
         
         let result;
