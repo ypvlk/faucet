@@ -62,10 +62,10 @@ module.exports = class Faucet {
                 await me.insertFileCron.start();
             }
 
-            //TODO 
-            //Дальше нужно сделать расчет стратегий и сохранения результатов в файл
-            //Также нужно сделать запросы http такие же
-            //И может команды
+        //     //TODO 
+        //     //Дальше нужно сделать расчет стратегий и сохранения результатов в файл
+        //     //Также нужно сделать запросы http такие же
+        //     //И может команды
         }, me.systemUtil.getConfig('faucet.faucet_time_interval'), 1000 * 60);
 
         eventEmitter.on('tick', function(options) {

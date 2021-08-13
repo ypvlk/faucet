@@ -15,7 +15,7 @@ module.exports = class InsertFileService {
     insertOneFile(options = {}) {
         return new Promise(async (resolve, reject) => {
             const { path, pack_count } = options;
-        
+            
             try {
                 fs.accessSync(path, fs.constants.F_OK);
             } catch (err) {
@@ -25,7 +25,7 @@ module.exports = class InsertFileService {
 
             const me = this;
             let data = [];
-
+            
             const stream = fs.createReadStream(path)
                 .pipe(csvParse({delimiter: ',', from_line: 2}))
                 .on('data', async row => {
@@ -55,7 +55,8 @@ module.exports = class InsertFileService {
                         }
                     }
                 })
-                .on('end',function() {
+                .on('end', function() {
+                    me.logger.debug(`Попали в удаления файла: ${path}`); //TODO delete
                     fs.unlink(path, function() {
                         me.logger.debug(`File: ${path} was deleted.`);
                         console.log(`File: ${path} was deleted.`);

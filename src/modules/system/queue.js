@@ -37,8 +37,7 @@ module.exports = class {
         if (!key || key in this.tasks) return;
         this.tasks[key] = key;
 
-        this.queue.add(promise);
-        console.log('size', this.queue.size);
+        return this.queue.add(promise);
     }
 
     // addQueue2(promise) {

@@ -31,7 +31,7 @@ module.exports = class InsertFileCron {
                     path: folder + file,
                     pack_count: 500
                 };
-
+                
                 const promise = () => new Promise(async (resolve, reject) => {
                     try {
                         await me.insertFileService.insertOneFile(options);

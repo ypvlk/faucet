@@ -25,7 +25,6 @@ module.exports = {
         debug: true, //Включает вывод инфы по запросам в консоль
     },
 
-
     production: {
         client: 'mysql2',
         connection: {

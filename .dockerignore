@@ -5,6 +5,10 @@ Dockerfile
 docker-compose.yml
 node_modules
 
+/node_modules
+/var/tickers/*.csv
+/var/backtesting/*.csv
+
 # Logs
 *.log
 npm-debug.log*

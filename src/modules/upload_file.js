@@ -24,7 +24,7 @@ module.exports = class UploadFileService {
     
             if (!url || !path) {
                 this.logger.error(`Upload file empty params`);
-                return reject();
+                reject();
             }
 
             const username = this.systemUtil.getConfig('webserver.username');
@@ -42,7 +42,7 @@ module.exports = class UploadFileService {
                 const data = await me.requestClient.executeUploadRequest(url, null, queries, null, {...new_headers, ...headers});
                 if (!data) {
                     me.logger.error(`File from: ${url} uploads fail. Data is: ${data}`);
-                    return reject();
+                    reject();
                 }
                 
                 const fileStream = fs.createWriteStream(path);
@@ -56,13 +56,13 @@ module.exports = class UploadFileService {
                 me.logger.debug(`File from: ${url} uploads success`);
                 console.log(`File from: ${url} uploads success`);
     
-                return resolve();
+                resolve();
             }
     
             me.logger.debug(`File: ${path} already maked.`);
             console.log(`File: ${path} already maked.`);
     
-            return resolve();
+            resolve();
         });
     }
 }
