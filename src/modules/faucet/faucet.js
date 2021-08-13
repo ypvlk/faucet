@@ -23,9 +23,6 @@ module.exports = class Faucet {
     }
 
     start() {
-        this.logger.debug('Faucet module start...');
-        console.log('Faucet module start...');
-
         const me = this;
         const { eventEmitter } = this;
 
@@ -39,7 +36,7 @@ module.exports = class Faucet {
         const message = `Start: faucet module - ${os.hostname()} - ${os.platform()} - ${moment().format()}`;
         
         me.logger.info(message);
-        console.log('message', message);
+        console.log(message);
 
         setInterval(async () => {
             await me.logsRepository.cleanOldLogEntries();
