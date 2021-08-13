@@ -57,8 +57,8 @@ module.exports = class InsertFileService {
                 })
                 .on('end',function() {
                     fs.unlink(path, function() {
-                        me.logger.debug('File was deleted.');
-                        console.log('File was deleted.');
+                        me.logger.debug(`File: ${path} was deleted.`);
+                        console.log(`File: ${path} was deleted.`);
                         resolve();
                     });
                 });
