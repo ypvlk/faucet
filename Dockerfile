@@ -28,6 +28,11 @@ COPY wait-for-it.sh .
 RUN chmod +x docker-deploy-production.sh
 RUN chmod +x wait-for-it.sh
 
+RUN chmod 777 /usr/local/bin/docker-entrypoint.sh \
+    && ln -s /usr/local/bin/docker-entrypoint.sh /
+
+RUN chmod -R 777 logs/*
+
 # Run container as non-root (unprivileged) user
 # The node user is provided in the Node.js Alpine base image
 USER node
