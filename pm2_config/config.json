@@ -3,7 +3,7 @@
         {
         "name"        : "faucet-worker",
         "script"      : "./main.js",
-        "args"        : ["faucet", "-m", "production"],
+        "args"        : "faucet",
         "exec_mode"   : "cluster",
         "interpreter_args": "--max-old-space-size=512", 
         "instances" : 1,
