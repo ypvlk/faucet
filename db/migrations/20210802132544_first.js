@@ -21,7 +21,8 @@ exports.up = function(knex) {
 
         knex.schema
         .createTable('logs', table => {
-            table.string('uuid', 64).primary().unique().notNull();
+            table.increments('id');
+            table.string('uuid', 64).unique().notNull();
             table.string('level', 32).notNull();
             table.text('message');
             table.integer('created_at', 4).unsigned().notNull();
