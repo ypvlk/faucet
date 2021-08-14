@@ -4,7 +4,7 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "dev": "nodemon main.js faucet -m development",
+    "server": "nodemon main.js faucet -m development",
     "start": "node main.js faucet -m production",
     "insert-file": "node main.js insert-file -m development -p var/tickers/2021-07-16_LTCUSDT_BTCUSDT_tickers.csv",
     "upload-file": "",

@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const moment = require('moment');
+const fs = require('fs');
 
 const Ticker = require('../../dict/ticker');
 const TickEvent = require('../../event/tick_event');
@@ -36,7 +37,7 @@ module.exports = class TickersStreamService {
         const me = this;
 
         let _files = [];
-
+        
         if (!Object.keys(options).length) throw new Error(`Parse error options: ${options}`);
         if (!Object.keys(item).length) throw new Error(`Parse error item: ${item}`);
         
@@ -50,7 +51,10 @@ module.exports = class TickersStreamService {
             exchange: p.split('.')[0], //binance_futures.BTCBUSD
             symbol: p.split('.')[1]
         }));
-
+        
+        //checkread file if file not exists
+        if (!me.isFileExists(pairs, date)) return;
+        
         const parse_date = new Date(date) / 1;
         
         for (const __opt of _opt) {
@@ -140,13 +144,26 @@ module.exports = class TickersStreamService {
         me.logger.debug(`Tickers stream service stoped.`);
         console.log(`Tickers stream service stoped.`);
     }
+
+    isFileExists(pairs, date) {
+        const filename = `${pairs[0].symbol}_${pairs[1].symbol}`;
+        const path = `${this.projectDir}/var/backtesting/${filename}_${date}.csv`;
+        
+        try {
+            fs.accessSync(path, fs.constants.F_OK);
+        } catch(e) {
+            return true;
+        }
+        
+        this.logger.debug(`File: ${path} exists.`);
+        return false;
+    }
     
     static parseOptions(options) {
 
         const {
             correction,
-            get_position,
-
+            get_position
         } = options;
 
         let result = [];

@@ -30,6 +30,7 @@ const MeanReversionRepository = require('./db/repository/mean_reversion_reposito
 
 const UploadFileCron = require('./faucet/upload_file_cron');
 const InsertFileCron = require('./faucet/insert_file_cron');
+const BacktestingCron = require('./faucet/backtesting_cron');
 
 const WinstonMysqlTransport = require('./system/winston_mysql_transport');
 const SystemUtil = require('./system/system_util');
@@ -64,6 +65,7 @@ let throttler;
 let uploadFileService;
 let uploadFileCron;
 let insertFileCron;
+let backtestingCron;
 
 const parameters = {};
 
@@ -367,6 +369,22 @@ module.exports = {
         ));
     },
 
+    getBacktestingCron: function() {
+        if (backtestingCron) {
+            return backtestingCron;
+        }
+    
+        return (backtestingCron = new BacktestingCron(
+            this.getSystemUtil(),
+            this.getLogger(),
+            this.getQueue(),
+            this.getThrottler(),
+            this.getInstances(),
+            this.getTickersStreamService(),
+            parameters.projectDir
+        ));
+    },
+
     createWebserverInstance: function() {
         return new Http(
             this.getSystemUtil(),
@@ -395,12 +413,17 @@ module.exports = {
     
         return new Faucet(
             this.getEventEmitter(),
+            this.getTickListener(),
+            this.getStrategyDatabaseListener(),
             this.getLogger(),
             this.getThrottler(),
             this.getSystemUtil(),
             this.getUploadFileCron(),
             this.getInsertFileCron(),
+            this.getBacktestingCron(),
             this.getLogsRepository(),
+            this.getInstances(),
+            this.getTickersStreamService(),
             parameters.projectDir
         );
     },

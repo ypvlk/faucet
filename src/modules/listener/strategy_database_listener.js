@@ -23,7 +23,7 @@ module.exports = class StrategyDatabaseListener {
         
         const strategy_repository = this.getRepository(strategy);
 
-        await strategy_repository.insertData(data);
+        // await strategy_repository.insertData(data);
     }
 
     getRepository(name) {

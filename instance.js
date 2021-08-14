@@ -28,6 +28,7 @@ l.forEach((pair) => {
                 'lead': splt(pair, 'lead'),
                 'driven': splt(pair, 'driven'),
                 'correction_indicator_changes': 0.1, //% - значения отклонения новой разницы процентов от старой
+                'exchange_commission': 0.04,
                 'get_position_change_tier_1': 0.19, //%
                 'get_position_change_tier_2': 0.6, //%
                 'get_position_change_tier_3': 0.8, //%
