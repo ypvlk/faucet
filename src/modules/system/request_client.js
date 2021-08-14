@@ -29,7 +29,7 @@ module.exports = class RequestClient {
             })
             .catch(err => {
                 this.logger.error(`Request execute error: ${String(err)}`);
-                resolve(null)
+                reject(err)
             });
         });
     }

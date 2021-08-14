@@ -161,9 +161,13 @@ module.exports = class Http {
             const queries = { date: date, period: period, limit: limit };
             const headers = {};
 
-            await this.uploadFileService.uploadOneFileFromServer({url, path, headers, queries});
+            try {
+                await this.uploadFileService.uploadOneFileFromServer({url, path, headers, queries});
+            } catch(err) {
+                return res.json({ success: true, message: `File uploaded error: ${err}` })
+            }
 
-            res.json({ success: true, message: 'File uploaded.' })
+            res.json({ success: true, message: 'File uploaded successful' });
         });
 
         app.get('/tickers/insert', async (req, res) => {
@@ -175,9 +179,13 @@ module.exports = class Http {
 
             if (!path || !pack_count) res.status(400).end('Error: path and pack_count query params are allowed');
         
-            await this.insertFileService.insertOneFile({path, pack_count});
+            try {
+                await this.insertFileService.insertOneFile({path, pack_count});
+            } catch(err) {
+                return res.json({ success: true, message: `File insert fail: ${err}` });
+            }
 
-            res.json({ success: true, message: 'File insered.' })
+            res.json({ success: true, message: 'File insered successful' });
         });
 
         app.get('/mean_reversion/download', async (req, res) => {
