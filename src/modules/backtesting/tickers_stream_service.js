@@ -26,40 +26,38 @@ module.exports = class TickersStreamService {
         this.csvExportHttp = csvExportHttp;
         this.projectDir = projectDir;
 
-        this.dataFromMonitoring = {};
-
-        this.is_test = true;
-        this.nullify = false;
-        this.exchange_commission = 0.08;
+        this.files_data = {};
     }
 
     async init(item, options = {}) {
+        this.logger.debug('Tickers stream service warmup done; starting ticks...');
         console.log('Tickers stream service warmup done; starting ticks...');
 
         const me = this;
 
         let _files = [];
 
+        if (!Object.keys(options).length) throw new Error(`Parse error options: ${options}`);
+        if (!Object.keys(item).length) throw new Error(`Parse error item: ${item}`);
+        
+        const _opt = TickersStreamService.parseOptions(options);
+
         const { pair, strategy } = item;
-        
-        const _opt = this.parseOptions(options);
-        
+        const {date, limit, period, } = options;
+
         const split_pairs = pair.split(':') ? pair.split(':') : pair; //binance_futures.BTCBUSD:binance_futures.ETHBUSD
         const pairs = split_pairs.map(p => ({
             exchange: p.split('.')[0], //binance_futures.BTCBUSD
             symbol: p.split('.')[1]
         }));
 
-        const limit = options.limit ? +options.limit : 1000;
-        const period = options.period ? +options.period : 3000;
-
-        const date = new Date(options.date) / 1;
+        const parse_date = new Date(date) / 1;
         
         for (const __opt of _opt) {
-            __opt.nullify = true;
+            __opt.nullify = true; //Этот ключ означает что начинаем с новыми параметрами
             
-            let startTime = moment(date).utc().startOf('day').unix() * 1000; 
-            let endTime = moment(date).utc().endOf('day').unix() * 1000; 
+            let startTime = moment(parse_date).utc().startOf('day').unix() * 1000; 
+            let endTime = moment(parse_date).utc().endOf('day').unix() * 1000; 
 
             let tickersFromDB;
             
@@ -75,7 +73,7 @@ module.exports = class TickersStreamService {
                         if (!tickersFromDB[j + 1]) break;
                         
                         const t = [tickersFromDB[j], tickersFromDB[j+1]];
-
+                        
                         t.forEach(ticker => {
                             //update ticker income time
                             if (ticker.income_at > startTime) startTime = ticker.income_at;
@@ -100,83 +98,86 @@ module.exports = class TickersStreamService {
                             strategy,
                             __opt
                         ));
+
+                        __opt.nullify = false;
                     }
                 }
 
-                __opt.nullify = false;
-                
             } while (tickersFromDB && tickersFromDB.length > limit - 1); 
             
             //Тут достаем данные с мониторинга в отбект
-            me.dataFromMonitoring = {
+            me.files_data = {
                 pairs: `${pairs[0].symbol}/${pairs[1].symbol}`, 
                 correction: __opt.correction_indicator_changes,
                 get_pos: __opt.get_position_change_tier_1,
                 take_profit: __opt.take_profit_position_change,
                 e1: '',
-                all_pos: this.backtestingStorage.getAllPositions(),
-                plus_pos: this.backtestingStorage.getPositivePositions(),
-                neg_pos: this.backtestingStorage.getNegativePositions(),
-                drawdown: this.backtestingStorage.getDrawdown(),
-                bal: this.backtestingStorage.getBalance(),
-                bal_comm: this.backtestingStorage.getBalanceWithComm(),
+                all_pos: me.backtestingStorage.getAllPositions(),
+                plus_pos: me.backtestingStorage.getPositivePositions(),
+                neg_pos: me.backtestingStorage.getNegativePositions(),
+                drawdown: me.backtestingStorage.getDrawdown(),
+                bal: me.backtestingStorage.getBalance(),
+                bal_comm: me.backtestingStorage.getBalanceWithComm(),
                 e2: '',
-                max_pos_profit: this.backtestingStorage.getMaxPositionProfit(),
-                max_pos_lose: this.backtestingStorage.getMaxPositionLose(),
-                min_pos_profit: this.backtestingStorage.getMinPositionProfit(),
-                min_pos_lose: this.backtestingStorage.getMinPositionLose(),
-                avr_pos_profit: this.backtestingStorage.getAveragePositionProfit(),
-                avr_pos_lose: this.backtestingStorage.getAveragePositionLose()
+                max_pos_profit: me.backtestingStorage.getMaxPositionProfit(),
+                max_pos_lose: me.backtestingStorage.getMaxPositionLose(),
+                min_pos_profit: me.backtestingStorage.getMinPositionProfit(),
+                min_pos_lose: me.backtestingStorage.getMinPositionLose(),
+                avr_pos_profit: me.backtestingStorage.getAveragePositionProfit(),
+                avr_pos_lose: me.backtestingStorage.getAveragePositionLose()
             }
-
-            _files.push(me.dataFromMonitoring);
+            
+            _files.push(me.files_data);
         }
 
         const filename = `${pairs[0].symbol}_${pairs[1].symbol}`;
-        const today = new Date().toISOString().slice(0, 10);
-        const fields = Object.keys(me.dataFromMonitoring);
-        const path = `${me.projectDir}/var/backtesting/${filename}_${today}`;
+        const path = `${me.projectDir}/var/backtesting/${filename}_${date}.csv`;
+
+        const fields = Object.keys(me.files_data);
 
         me.csvExportHttp.saveSyncIntoFile(_files, path, fields);
 
+        me.logger.debug(`Tickers stream service stoped.`);
         console.log(`Tickers stream service stoped.`);
     }
     
-    parseOptions(options) {
-        //https://stackoverflow.com/questions/3895478/does-javascript-have-a-method-like-range-to-generate-a-range-within-the-supp
+    static parseOptions(options) {
+
+        const {
+            correction,
+            get_position,
+
+        } = options;
 
         let result = [];
         let corrections = [];
-        let gpositions = [];
+        let get_positions = [];
 
-        const tprofit = options.tprofit ? +options.tprofit : 0.05;
-
-        if (options.correction && options.correction.length) {
-
-            const correction_step = 0.01;
+        if (correction && correction.length) {
+            const correction_step = 0.01; //it's contant
             const correction_start = +options.correction[0];
-            const correction_end = +options.correction[1] + 0.01;
+            const correction_end = +options.correction[1] + correction_step;
             
-            corrections = this.arrayFromRange(correction_step, correction_start, correction_end);
+            corrections = TickersStreamService.arrayFromRange(correction_step, correction_start, correction_end);
         }
 
-        if (options.gposition && options.gposition.length) {
-            const gposition_step = 0.01;
-            const gposition_start = +options.gposition[0];
-            const gposition_end = +options.gposition[1];
+        if (get_position && get_position.length) {
+            const gposition_step = 0.01; //it's contant
+            const gposition_start = +get_position[0];
+            const gposition_end = +get_position[1] + gposition_step;
 
-            gpositions = this.arrayFromRange(gposition_step, gposition_start, gposition_end);
+            get_positions = TickersStreamService.arrayFromRange(gposition_step, gposition_start, gposition_end);
         }
         
         for (let i = 0; i < corrections.length; i++) {
-            for (let j = 0; j < gpositions.length; j++) {
+            for (let j = 0; j < get_positions.length; j++) {
                 result.push({
                     correction_indicator_changes: corrections[i],
-                    get_position_change_tier_1: gpositions[j],
-                    take_profit_position_change: tprofit,
-                    is_test: this.is_test,
-                    nullify: this.nullify,
-                    commission: this.exchange_commission
+                    get_position_change_tier_1: get_positions[j],
+                    take_profit_position_change: +options.take_profit,
+                    is_test: true,
+                    nullify: false,
+                    commission: +options.exchange_commission
                 });
             }
         }
@@ -184,7 +185,8 @@ module.exports = class TickersStreamService {
         return result;
     }
 
-    arrayFromRange(step, start, end) {
+    static arrayFromRange(step, start, end) {
+        //https://stackoverflow.com/questions/3895478/does-javascript-have-a-method-like-range-to-generate-a-range-within-the-supp
         if (step && start && end) {
             return _.range(start, end, step);
         } else {

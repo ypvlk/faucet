@@ -215,6 +215,21 @@ module.exports = class Http {
 
             res.status(200).end(result);
         });
+
+        app.get('/backtesting/download', async (req, res) => {
+            //localhost:3000/backtesting/download?filename=BTCBUSD_ETHBUSD_2021-08-05.csv
+            const {
+                filename,
+            } = req.query;
+
+            if (!filename) res.status(400).end('Error: filename query params is allowed');
+
+            const file = `${this.projectDir}/var/backtesting/${filename}`;
+
+            res.download(file, filename, function (err) {
+                if (err) res.status(400).end(`Error: ${String(err)}`);
+            })
+        });
         
         const ip = this.systemUtil.getConfig('webserver.ip', '0.0.0.0');
         const port = this.systemUtil.getConfig('webserver.port', 3000);

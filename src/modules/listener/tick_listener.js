@@ -22,7 +22,7 @@ module.exports = class TickListener {
         const me = this;
 
         const { pairs, strategy, options } = tickEvent; //pairs: ArrayOfObject, strategy: Objcet
-
+        
         const strategyInstance = me.strategyManager.findStrategy(strategy.name);
         if (!strategyInstance) {
             me.logger.error(`Invalid find strategy: ${JSON.stringify(strategy.name)}`);
@@ -45,7 +45,7 @@ module.exports = class TickListener {
         const me = this;
 
         const tickers = [];
-
+        
         const opt = {...strategy.options, ...options};
         
         pairs.forEach(pair => {

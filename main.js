@@ -64,18 +64,18 @@ program
 
 program
     .command('backtesting')
-    .description('process testing strategy saved data and params')
-    .option('-m, --mode <mode>', 'development or production', 'development')
-    .option('-pr, --pairs <pairs>')
+    .description('process testing strategy on saved data and params')
     .option('-d, --date <date>')
+    .option('-ps, --pairs <pairs>')//должен соответствовать одному из элементов в массиве в instance
     .option('-c, --correction [correction...]')
-    .option('-g, --gposition [gposition...]')
-    .option('-tp, --tprofit <tprofit>')
-    .option('-p, --period <period>', '', '3000')
-    .option('-l, --limit <limit>', '', '1000')
+    .option('-gp, --get_position [get_position...]')
+    .option('-tp, --take_profit <take_profit>', 'change for take profit', '0.055')
+    .option('-ec, --exchange_commission <exchange_commission>', 'commission for one position', '0.04')
+    .option('-p, --period <period>', 'period for one tick saved in millsecond', '3000')
+    .option('-l, --limit <limit>', 'limits for gets from db for one tick', '1000')
     .action(async options => {
         
-        if (!options.pairs || !options.date || !options.correction || !options.gposition || !options.tprofit) {
+        if (!options.date || !options.pairs || !options.correction || !options.get_position || !options.take_profit) {
             throw new Error('Not all options are given');
         }
         

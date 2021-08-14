@@ -56,7 +56,6 @@ module.exports = class InsertFileService {
                     }
                 })
                 .on('end', function() {
-                    me.logger.info(`Попали в удаления файла: ${path}`); //TODO delete
                     fs.unlink(path, function() {
                         me.logger.info(`File: ${path} was deleted.`);
                         console.log(`File: ${path} was deleted.`);

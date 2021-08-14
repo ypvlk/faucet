@@ -20,7 +20,8 @@ module.exports = {
         },
         pool: {
             min: 1,
-            max: 2 ///connections = ((core_count * 2) + effective_spindle_count)
+            max: 2, ///connections = ((core_count * 2) + effective_spindle_count)
+            propagateCreateError: false // <- default is true, set to false
         },
         debug: true, //Включает вывод инфы по запросам в консоль
     },
@@ -43,7 +44,8 @@ module.exports = {
         },
         pool: {
             min: 1,
-            max: 2 ///connections = ((core_count * 2) + effective_spindle_count)
+            max: 2, ///connections = ((core_count * 2) + effective_spindle_count)
+            propagateCreateError: false // <- default is true, set to false
         },
 
         //Это важное время, таймаут подключение knex к бд
@@ -74,6 +76,6 @@ module.exports = {
 
         // how long to idle after failed create before trying again
         createRetryIntervalMillis: 200,
-        propagateCreateError: false
+        // propagateCreateError: false
     }
 }

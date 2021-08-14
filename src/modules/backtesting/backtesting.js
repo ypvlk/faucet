@@ -3,6 +3,7 @@ const _ = require('lodash');
 module.exports = class Backtesting {
     constructor(
         eventEmitter,
+        logger,
         tickListener,
         tickersStreamService,
         strategyDatabaseListener,
@@ -10,6 +11,7 @@ module.exports = class Backtesting {
         systemUtil
     ) {
         this.eventEmitter = eventEmitter;
+        this.logger = logger;
         this.tickListener = tickListener;
         this.tickersStreamService = tickersStreamService;
         this.strategyDatabaseListener = strategyDatabaseListener;
@@ -18,6 +20,7 @@ module.exports = class Backtesting {
     }
 
     start(options = {}) {
+        this.logger.debug('Backtesting module started...');
         console.log('Backtesting module started...');
 
         const me = this;

@@ -382,6 +382,7 @@ module.exports = {
     createBacktestingInstance: function() {
         return new Backtesting(
             this.getEventEmitter(),
+            this.getLogger(),
             this.getTickListener(),
             this.getTickersStreamService(),
             this.getStrategyDatabaseListener(),

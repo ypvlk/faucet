@@ -15,16 +15,18 @@ module.exports = class CsvExportHttp {
     }
 
     saveSyncIntoFile(data, path, fields) {
+        this.logger.debug(`Save sync into file start...`);
         console.log('Saving data into file...');
 
         const csvParser = new Parser({ fields });
         const csv = csvParser.parse(data); //[это массив обьектов]
 
-        fs.writeFileSync(`${path}.csv`, csv, function(err) {
+        fs.writeFileSync(`${path}`, csv, function(err) {
             if (err) this.logger.error(`Write save into file sync error: ${String(err)}`);
         });
 
-        console.log(`File ${path}.csv saved.`);
+        this.logger.info(`File: ${path} saved.`);
+        console.log(`File ${path} saved.`);
     }
 
     async downloadMeanReversionTable(leadExchange, leadSymbol, drivenExchange, drivenSymbol, limit) {
@@ -39,4 +41,6 @@ module.exports = class CsvExportHttp {
             return csvParser.parse(result);
         }
     }
+
+    
 };
