@@ -32,6 +32,8 @@ RUN chmod 777 /usr/local/bin/docker-entrypoint.sh \
     && ln -s /usr/local/bin/docker-entrypoint.sh /
 
 RUN chmod -R 777 logs/
+RUN chmod -R 777 var/tickers/
+RUN chmod -R 777 var/backtesting/
 
 # Run container as non-root (unprivileged) user
 # The node user is provided in the Node.js Alpine base image

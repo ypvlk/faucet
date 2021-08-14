@@ -49,7 +49,7 @@ module.exports = class Faucet {
             const hours = date.getUTCHours();
             const minutes = date.getUTCMinutes();
             
-            if (hours === 23 && minutes >= 47 && minutes <= 50) {
+            if (hours === 23 && minutes >= 47 && minutes <= 55) {
                 //It's time a faucet tickers from skinrobot servers
                 me.logger.debug('It\'s time a faucet tickers from skinrobot servers');
                 await me.uploadFileCron.start();
@@ -66,6 +66,8 @@ module.exports = class Faucet {
         //     //Также нужно сделать запросы http такие же
         //     //И может команды
         }, me.systemUtil.getConfig('faucet.faucet_time_interval'), 1000 * 60);
+
+
 
         eventEmitter.on('tick', function(options) {
             // me.tickListener.onTick(options);

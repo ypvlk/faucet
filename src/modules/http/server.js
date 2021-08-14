@@ -145,7 +145,7 @@ module.exports = class Http {
         });
 
         app.get('/tickers/upload', async (req, res) => {
-            //localhost:3000/tickers/upload?date=2021-08-04&period=3000&limit=1000&host=167.172.44.124:3000
+            //localhost:3000/tickers/upload?date=2021-08-13&period=3000&limit=1000&host=167.172.44.124:3000
             const {
                 date,
                 period,

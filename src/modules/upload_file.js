@@ -30,7 +30,7 @@ module.exports = class UploadFileService {
             const username = this.systemUtil.getConfig('webserver.username');
             const password = this.systemUtil.getConfig('webserver.password');
 
-            const new_headers = {
+            const new_headers = { //TODO убрать отсюда headers
                 'Authorization': 'Basic ' + Buffer.from(username + ':' + password).toString('base64'),
             }
 
