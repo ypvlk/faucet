@@ -22,7 +22,7 @@ module.exports = class {
         
         this.queue2 = new Queue({
             concurrent: 1,
-            interval: 1000 * 2,
+            interval: 1000 * 60,
             start: true
         })
         .on('resolve', key => {

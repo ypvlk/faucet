@@ -10,18 +10,13 @@ module.exports = class StrategyDatabaseListener {
     }
 
     async saveData(signalEvent) {
-        const {
-            strategy,
-            data
-        } = signalEvent;
+        const {strategy, data} = signalEvent;
 
         if (!data || !strategy) return;
 
-        // if (data && data.backtesting) {
-            this.saveTestingData(data);
-        // }
+        this.updateBacktestingStorage(data);
         
-        const strategy_repository = this.getRepository(strategy);
+        // const strategy_repository = this.getRepository(strategy);
 
         // await strategy_repository.insertData(data);
     }
@@ -35,7 +30,7 @@ module.exports = class StrategyDatabaseListener {
         }
     }
 
-    saveTestingData(data) {
+    updateBacktestingStorage(data) {
         if (data.balance) this.backtestingStorage.updateBalance(data.balance);
         if (data.balance_comm) this.backtestingStorage.updateBalanceWithComm(data.balance_comm);
         if (data.drawdown) this.backtestingStorage.updateDrawdown(data.drawdown);

@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const moment = require('moment');
 
 module.exports = class BacktestingCron {
     constructor(
@@ -17,17 +18,26 @@ module.exports = class BacktestingCron {
         this.instances = instances;
         this.tickersStreamService = tickersStreamService;
         this.projectDir = projectDir;
-
-        this.pairs = instances.symbols;
-
-        //TODO 
-        //add setinterval update pairs
+        
+        this.pairs = instances.symbols.map(s => s);
+        this.pairs_was_updated = true;
+        
+        setInterval(() => {
+            if (!this.pairs_was_updated && new Date().getUTCHours() === 0) {
+                this.pairs = instances.symbols.map(s => s);;
+                this.pairs_was_updated = true;
+            }
+        }, 1000 * 60 * 9); //60 * 9
     }
 
     start() {
+        if (this.pairs && this.pairs.length === 0) {
+            this.pairs_was_updated = false;
+            return;
+        }
+        
         //Check Queue Tasks
         const queue_tasks = this.queue.getQueue2Tasks();
-        console.log('Q', Object.keys(queue_tasks).length);
         if (Object.keys(queue_tasks).length !== 0) return;
     
         this.logger.debug('Backtesting cron start');
@@ -38,9 +48,9 @@ module.exports = class BacktestingCron {
         const yesterday = new Date(new Date().setDate(new Date().getDate()-1)).toISOString().slice(0, 10);
 
         const options = { 
-            date: '2021-08-05', 
-            limit: 2000, 
-            period: 3000,
+            date: yesterday, 
+            limit: me.systemUtil.getConfig('backtesting.limit'), 
+            period: me.systemUtil.getConfig('backtesting.period'),
             correction: me.systemUtil.getConfig('backtesting.correction'),
             get_position: me.systemUtil.getConfig('backtesting.get_position'),
             take_profit: me.systemUtil.getConfig('backtesting.take_profit'),

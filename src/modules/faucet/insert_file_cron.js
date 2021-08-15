@@ -18,21 +18,25 @@ module.exports = class InsertFileCron {
     }
 
     async start() {
-        this.logger.debug(`Insert file cron start`);
-
         const me = this;
 
         const folder = `${this.projectDir}/var/tickers/`;
 
         fs.readdirSync(folder).forEach(file => {
-            const check_file = file.split('.')[1];
+            const check_file = file.slice(file.length - 4);
             
-            if (check_file === 'csv') {
+            if (check_file === '.csv') {
                 const key = 'insert_file_cron' + '_' + file;
                 const options = {
                     path: folder + file,
                     pack_count: 500
                 };
+
+                //Check queue taska
+                const queue_tasks = me.queue.getQueueTasks();
+                if (key in queue_tasks) return;
+
+                me.logger.debug(`Insert file cron start`);
                 
                 const promise = () => new Promise(async (resolve, reject) => {
                     try {

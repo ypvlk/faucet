@@ -28,8 +28,6 @@ module.exports = class Faucet {
         this.logsRepository = logsRepository;
         this.instances = instances;
         this.projectDir = projectDir;
-
-        // this.pairs = [];
     }
 
     start() {
@@ -47,36 +45,30 @@ module.exports = class Faucet {
 
         const me = this;
         const { eventEmitter } = this;
-
-        // me.pairs = me.instances.symbols;
         
         setInterval(async () => {
             await me.logsRepository.cleanOldLogEntries();
             
             me.logger.info('Cleanup old entries');
         }, 86455000 * 2); //* 3 days
-
+        
         setInterval(async () => {
             const date = new Date();  
             const hours = date.getUTCHours();
             const minutes = date.getUTCMinutes();
             
             if (hours === 23 && minutes >= 47 && minutes <= 55) {
-                me.logger.debug('It\'s time a faucet tickers from skinrobot servers');
                 await me.uploadFileCron.start();
             }
             
             if (hours === 0 && minutes >= 2 && minutes <= 10) {
-                me.logger.debug('It\'s time a insert tickers from files into db');
                 await me.insertFileCron.start();
             }
             
-            if (hours > 0 && hours < 20) {
-                // if (me.pairs.length > 0) {
-                    me.backtestingCron.start();
-                // }
+            if (hours > -1 && minutes > 12 && hours < 20) {
+                me.backtestingCron.start();
             }
-        }, me.systemUtil.getConfig('faucet.faucet_time_interval'), 1000 * 60);
+        }, me.systemUtil.getConfig('faucet.faucet_time_interval'), 1000 * 60 * 2);
 
         eventEmitter.on('tick', function(tickEvent) {
             me.tickListener.onTick(tickEvent);

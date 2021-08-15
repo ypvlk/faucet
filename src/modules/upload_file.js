@@ -58,8 +58,7 @@ module.exports = class UploadFileService {
     
                 resolve();
             }
-    
-            me.logger.debug(`File: ${path} already maked.`);
+            
             console.log(`File: ${path} already maked.`);
     
             resolve();

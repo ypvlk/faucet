@@ -35,7 +35,7 @@ module.exports = class RequestClient {
     }
 
     executePOSTRequest(uri, method, options = {}, body, headers) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
 
             if (!uri || !method) throw new Error(`Url and method are allowed`);
 
@@ -48,7 +48,7 @@ module.exports = class RequestClient {
 
             f(url, {
                 method: method ? method : 'POST',
-                body:   body && JSON.stringify(body),
+                body:   body ? JSON.stringify(body) : JSON.stringify({}),
                 headers: headers ? headers : { 'Content-Type': 'application/json' },
             })
             .then(res => {
@@ -60,7 +60,7 @@ module.exports = class RequestClient {
             })
             .catch(err => {
                 this.logger.error(`Request execute error: ${String(err)}`);
-                resolve()
+                reject(err)
             });
         })
     }
@@ -68,7 +68,6 @@ module.exports = class RequestClient {
     executeUploadRequest(uri, method, options = {}, body, headers) {
         return new Promise(resolve => {
             if (!uri) throw new Error(`Uri is allowed`);
-
             let url = uri;
 
             if (Object.keys(options).length > 0) {
@@ -78,8 +77,8 @@ module.exports = class RequestClient {
 
             f(url, {
                 method: method ? method : 'GET',
-                body:   body && JSON.stringify(body),
-                headers: headers && headers
+                body:   body ? JSON.stringify(body) : JSON.stringify({}),
+                headers: headers ? headers : { 'Content-Type': 'application/json' },
             })
             .then(res => {
                 if (!res.ok) throw new Error(`${JSON.stringify(res.statusText)}`);
