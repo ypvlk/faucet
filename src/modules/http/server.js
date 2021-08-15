@@ -171,13 +171,15 @@ module.exports = class Http {
         });
 
         app.get('/tickers/insert', async (req, res) => {
-            //localhost:3000/tickers/insert?pack_count=500&path=var/tickers/command_test_tickers.csv
+            //localhost:3000/tickers/insert?pack_count=500&filename=167.172.44.124:3000_2021-08-13_tickers.csv
             const {
-                path,
-                pack_count
+                filename,
+                pack_count //TODO delete this parametr and input it into conf.json
             } = req.query;
 
-            if (!path || !pack_count) res.status(400).end('Error: path and pack_count query params are allowed');
+            if (!filename || !pack_count) res.status(400).end('Error: filename and pack_count query params are allowed');
+
+            const path = `${this.projectDir}/var/tickers/${filename}`;
         
             try {
                 await this.insertFileService.insertOneFile({path, pack_count});
