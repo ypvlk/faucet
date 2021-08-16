@@ -77,7 +77,7 @@ module.exports = class RequestClient {
 
             f(url, {
                 method: method ? method : 'GET',
-                body:   body ? JSON.stringify(body) : JSON.stringify({}),
+                body:   body && JSON.stringify(body),
                 headers: headers ? headers : { 'Content-Type': 'application/json' },
             })
             .then(res => {
