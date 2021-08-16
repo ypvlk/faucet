@@ -56,6 +56,8 @@ module.exports = class TickersStreamService {
         if (!me.isFileExists(pairs, date)) return;
         
         const parse_date = new Date(date) / 1;
+
+        const timerBegin = new Date.now(); //TIMER
         
         for (const __opt of _opt) {
             __opt.nullify = true; //Этот ключ означает что начинаем с новыми параметрами
@@ -134,6 +136,9 @@ module.exports = class TickersStreamService {
             _files.push(me.files_data);
         }
 
+        const timerEnd = new Date.now(); //TIMER
+        const timerResult= (timerEnd - timerBegin) / 1000; //in sec
+
         const filename = `${pairs[0].symbol}_${pairs[1].symbol}`;
         const path = `${me.projectDir}/var/backtesting/${filename}_${date}.csv`;
 
@@ -141,8 +146,8 @@ module.exports = class TickersStreamService {
 
         me.csvExportHttp.saveSyncIntoFile(_files, path, fields);
 
-        me.logger.debug(`Tickers stream service stoped.`);
-        console.log(`Tickers stream service stoped.`);
+        me.logger.debug(`File: ${path} saved successfully for ${timerResult}sec`);
+        console.log(`File: ${path} saved successfully for ${timerResult}sec`);
     }
 
     isFileExists(pairs, date) {
