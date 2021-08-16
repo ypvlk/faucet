@@ -19,8 +19,8 @@ module.exports = class InsertFileService {
             try {
                 fs.accessSync(path, fs.constants.F_OK);
             } catch (err) {
-                this.logger.error(`File find file error: ${String(err)}`);
-                reject(`File find file error: ${String(err)}`);
+                this.logger.error(`File find error: ${String(err)}`);
+                return reject(`File find error: ${String(err)}`);
             }
 
             const me = this;
@@ -48,7 +48,7 @@ module.exports = class InsertFileService {
                             await me.tickersRepository.insert(data);
                         } catch (err) {
                             me.logger.error(`Stream pause or insert into db error: ${String(err)}`);
-                            reject(`Stream pause or insert into db error: ${String(err)}`);
+                            return reject(`Stream pause or insert into db error: ${String(err)}`);
                         } finally {
                             data = [];
                             stream.resume();
@@ -59,7 +59,7 @@ module.exports = class InsertFileService {
                     fs.unlink(path, function() {
                         me.logger.info(`File: ${path} was deleted.`);
                         console.log(`File: ${path} was deleted.`);
-                        resolve();
+                        return resolve();
                     });
                 });
             });
