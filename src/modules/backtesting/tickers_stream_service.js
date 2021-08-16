@@ -137,10 +137,10 @@ module.exports = class TickersStreamService {
         }
 
         const timerEnd = new Date.now(); //TIMER
-        const timerResult= (timerEnd - timerBegin) / 1000; //in sec
+        const timerResult= Math.trunc((timerEnd - timerBegin) / 1000); //in sec
 
         const filename = `${pairs[0].symbol}_${pairs[1].symbol}`;
-        const path = `${me.projectDir}/var/backtesting/${filename}_${date}.csv`;
+        const path = `${me.projectDir}/var/backtesting/${filename}_${date}.csv`; //TODO add strategy
 
         const fields = Object.keys(me.files_data);
 
