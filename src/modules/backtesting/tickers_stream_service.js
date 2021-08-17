@@ -31,9 +31,6 @@ module.exports = class TickersStreamService {
     }
 
     async init(item, options = {}) {
-        this.logger.debug('Tickers stream service warmup done; starting ticks...');
-        console.log('Tickers stream service warmup done; starting ticks...');
-
         const me = this;
 
         let _files = [];
@@ -54,6 +51,9 @@ module.exports = class TickersStreamService {
         
         //checkread file if file not exists
         if (!me.isFileExists(pairs, date)) return;
+
+        me.logger.debug('Tickers stream service warmup done; starting ticks...');
+        console.log('Tickers stream service warmup done; starting ticks...');
         
         const parse_date = new Date(date) / 1;
 

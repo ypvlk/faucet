@@ -26,6 +26,7 @@ module.exports = class BacktestingCron {
             if (!this.pairs_was_updated && new Date().getUTCHours() === 0) {
                 this.pairs = instances.symbols.map(s => s);;
                 this.pairs_was_updated = true;
+                this.logger.info(`Update ${this.pairs.length} pairs into backtesting`);
             }
         }, 1000 * 60 * 9); //60 * 9
     }
@@ -38,7 +39,10 @@ module.exports = class BacktestingCron {
         
         //Check Queue Tasks
         const queue_tasks = this.queue.getQueue2Tasks();
-        if (Object.keys(queue_tasks).length !== 0) return;
+        if (Object.keys(queue_tasks).length !== 0) {
+            me.logger.debug(`Очередь занята, ${queue_tasks}`); //TODO DELETE
+            return;
+        }
     
         this.logger.debug('Backtesting cron start');
         console.log('Backtesting cron start');
