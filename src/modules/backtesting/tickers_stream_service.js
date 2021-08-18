@@ -57,7 +57,7 @@ module.exports = class TickersStreamService {
         
         const parse_date = new Date(date) / 1;
 
-        const timerBegin = new Date.now(); //TIMER
+        const timerBegin = Date.now(); //TIMER
         
         for (const __opt of _opt) {
             __opt.nullify = true; //Этот ключ означает что начинаем с новыми параметрами
@@ -136,7 +136,7 @@ module.exports = class TickersStreamService {
             _files.push(me.files_data);
         }
 
-        const timerEnd = new Date.now(); //TIMER
+        const timerEnd = Date.now(); //TIMER
         const timerResult= Math.trunc((timerEnd - timerBegin) / 1000); //in sec
 
         const filename = `${pairs[0].symbol}_${pairs[1].symbol}`;

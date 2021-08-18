@@ -28,7 +28,7 @@ module.exports = class BacktestingCron {
                 this.pairs_was_updated = true;
                 this.logger.info(`Update ${this.pairs.length} pairs into backtesting`);
             }
-        }, 1000 * 60 * 9); //60 * 9
+        }, 1000 * 60); //60 * 9
     }
 
     start() {
@@ -40,7 +40,7 @@ module.exports = class BacktestingCron {
         //Check Queue Tasks
         const queue_tasks = this.queue.getQueue2Tasks();
         if (Object.keys(queue_tasks).length !== 0) {
-            me.logger.debug(`Очередь занята, ${queue_tasks}`); //TODO DELETE
+            me.logger.debug(`Queue is busy, ${queue_tasks}`); //TODO DELETE
             return;
         }
     
