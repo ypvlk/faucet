@@ -34,6 +34,7 @@ module.exports = class TickersRepository {
                 })
                 .catch(err => { 
                     this.logger.error(`Mysql error in table ${this.table}: ${err}`);
+                    resolve();
                 })
         });
     }
@@ -53,9 +54,11 @@ module.exports = class TickersRepository {
                 .orderBy(`${this.table}.income_at`, 'asc')
                 .then(result => { 
                     if (result && result.length) resolve(result);
+                    resolve([]);
                 })
                 .catch(err => { 
-                    this.logger.error(`Mysql error in table ${this.table}: ${err}`)
+                    this.logger.error(`Mysql error in table ${this.table}: ${err}`);
+                    resolve([]);
                 })
         });
     }

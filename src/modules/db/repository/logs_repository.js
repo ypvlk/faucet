@@ -20,10 +20,11 @@ module.exports = class LogsRepository {
                 .where(`${this.table}.created_at`, '<', created_at)
                 .del()
                 .then(result => { 
-                    if (result && result !== 0) resolve();
+                    resolve();
                 })
                 .catch(err => { 
-                    this.logger.error(`Mysql error in table ${this.table}: ${err}`)
+                    this.logger.error(`Mysql error in table ${this.table}: ${err}`);
+                    resolve();
                 })
         });
     }
@@ -41,9 +42,11 @@ module.exports = class LogsRepository {
                     .orderBy(`${this.table}.created_at`, 'desc')
                     .then(result => { 
                         if (result && result.length) resolve(result);
+                        resolve([]);
                     })
                     .catch(err => { 
-                        this.logger.error(`Mysql error in table ${this.table}: ${err}`)
+                        this.logger.error(`Mysql error in table ${this.table}: ${err}`);
+                        resolve([]);
                     })
             } else {
                 this.mysqlDB(this.table)
@@ -53,9 +56,11 @@ module.exports = class LogsRepository {
                     .orderBy(`${this.table}.created_at`, 'desc')
                     .then(result => { 
                         if (result && result.length) resolve(result);
+                        resolve([]);
                     })
                     .catch(err => { 
-                        this.logger(`Mysql get logs levels error: ${err}`)
+                        this.logger(`Mysql get logs levels error: ${err}`);
+                        resolve([]);
                     })
             }
         });
@@ -69,9 +74,11 @@ module.exports = class LogsRepository {
                 .groupBy('level')
                 .then(result => { 
                     if (result && result.length) resolve(result.map(r => r.level));
+                    resolve([]);
                 })
                 .catch(err => { 
                     this.logger.error(`Mysql error in table ${this.table}: ${err}`);
+                    resolve([]);
                 })
         });
     }

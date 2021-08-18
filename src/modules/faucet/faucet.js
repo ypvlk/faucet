@@ -53,6 +53,9 @@ module.exports = class Faucet {
         }, 86455000 * 2); //* 3 days
         
         setInterval(async () => {
+            me.logger.debug('Faucet warmup done; starting ticks...');
+            console.log('Faucet warmup done; starting ticks...');
+
             const date = new Date();  
             const hours = date.getUTCHours();
             const minutes = date.getUTCMinutes();

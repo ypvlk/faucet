@@ -52,8 +52,8 @@ module.exports = class TickersStreamService {
         //checkread file if file not exists
         if (!me.isFileExists(pairs, date)) return;
 
-        me.logger.debug('Tickers stream service warmup done; starting ticks...');
-        console.log('Tickers stream service warmup done; starting ticks...');
+        me.logger.debug('Tickers stream service start');
+        console.log('Tickers stream service start');
         
         const parse_date = new Date(date) / 1;
 
@@ -68,46 +68,51 @@ module.exports = class TickersStreamService {
             let tickersFromDB;
             
             do {
+                let x2index = 0;
+
                 if (startTime > endTime) break;
                 
                 tickersFromDB = await me.tickerExportHttp.getMultipleTickers(pairs, period, startTime, endTime, limit);
-                
-                if (tickersFromDB && tickersFromDB.length > pairs.length / 2) {
-                    let j = 0;
-
-                    for(let i = 0; i < tickersFromDB.length / pairs.length; i++) {
-                        if (!tickersFromDB[j + 1]) break;
-                        
-                        const t = [tickersFromDB[j], tickersFromDB[j+1]];
-                        
-                        t.forEach(ticker => {
-                            //update ticker income time
-                            if (ticker.income_at > startTime) startTime = ticker.income_at;
-
-                            //save at storage
-                            me.tickers.set(new Ticker(
-                                ticker.exchange,
-                                ticker.symbol,
-                                ticker.income_at,
-                                ticker.bidPrice,
-                                ticker.bidSize,
-                                ticker.askPrice,
-                                ticker.askSize,
-                                ticker.close
-                            ));
-                        });
-
-                        j = j + 2;
-                        
-                        me.eventEmitter.emit('tick', new TickEvent(
-                            pairs,
-                            strategy,
-                            __opt
-                        ));
-
-                        __opt.nullify = false;
-                    }
+                if (x2index === 0 && !tickersFromDB.length) {
+                    this.logger.debug('Get tickers from db into tickers stream service is empty');
+                    return; //Выходим с сервиса если на первой итерации пусто
                 }
+
+                // if (tickersFromDB && tickersFromDB.length > pairs.length / 2) {
+
+                for(let i = 0; i < tickersFromDB.length / pairs.length; i++) {
+                    if (!tickersFromDB[x2index + 1]) break;
+                    
+                    const t = [tickersFromDB[x2index], tickersFromDB[x2index+1]];
+                    
+                    t.forEach(ticker => {
+                        //update ticker income time
+                        if (ticker.income_at > startTime) startTime = ticker.income_at;
+
+                        //save at storage
+                        me.tickers.set(new Ticker(
+                            ticker.exchange,
+                            ticker.symbol,
+                            ticker.income_at,
+                            ticker.bidPrice,
+                            ticker.bidSize,
+                            ticker.askPrice,
+                            ticker.askSize,
+                            ticker.close
+                        ));
+                    });
+
+                    x2index = x2index + 2;
+                    
+                    me.eventEmitter.emit('tick', new TickEvent(
+                        pairs,
+                        strategy,
+                        __opt
+                    ));
+
+                    __opt.nullify = false;
+                }
+                // }
 
             } while (tickersFromDB && tickersFromDB.length > limit - 1); 
             
@@ -143,7 +148,7 @@ module.exports = class TickersStreamService {
         const path = `${me.projectDir}/var/backtesting/${filename}_${date}.csv`; //TODO add strategy
 
         const fields = Object.keys(me.files_data);
-
+        
         me.csvExportHttp.saveSyncIntoFile(_files, path, fields);
 
         me.logger.debug(`File: ${path} saved successfully for ${timerResult}sec`);
