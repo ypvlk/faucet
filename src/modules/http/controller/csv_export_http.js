@@ -18,6 +18,21 @@ module.exports = class CsvExportHttp {
         this.logger.debug(`Save sync into file start...`);
         console.log('Saving data into file...');
 
+        if (data && data.length === 0) {
+            this.logger.error(`File save fail: data is empty`);
+            return;
+        }
+
+        if (fields && fields.length === 0) {
+            this.logger.error(`File save fail: fields is empty`);
+            return;
+        }
+
+        if (!path) {
+            this.logger.error(`File save fail: path is not defined`);
+            return;
+        }
+
         const csvParser = new Parser({ fields });
         const csv = csvParser.parse(data); //[это массив обьектов]
 
