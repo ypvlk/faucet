@@ -51,17 +51,18 @@ module.exports = class BacktestingCron {
 
         const yesterday = new Date(new Date().setDate(new Date().getDate()-1)).toISOString().slice(0, 10);
 
+        const item = me.pairs.shift();
+
         const options = { 
             date: yesterday, 
-            limit: me.systemUtil.getConfig('backtesting.limit'), 
-            period: me.systemUtil.getConfig('backtesting.period'),
-            correction: me.systemUtil.getConfig('backtesting.correction'),
-            get_position: me.systemUtil.getConfig('backtesting.get_position'),
-            take_profit: me.systemUtil.getConfig('backtesting.take_profit'),
-            exchange_commission: me.systemUtil.getConfig('backtesting.exchange_commission')
+            limit: item.backtesting.limit,
+            period: item.backtesting.period,
+            correction: item.backtesting.correction,
+            get_position: item.backtesting.get_position,
+            take_profit: item.backtesting.take_profit,
+            exchange_commission: item.backtesting.exchange_commission,
         };
 
-        const item = me.pairs.shift();
         const key = `tickers-stream-service-${item.pair}`;
 
         const promise = () => new Promise(async (resolve, reject) => {

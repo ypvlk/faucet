@@ -50,7 +50,7 @@ module.exports = class Faucet {
             await me.logsRepository.cleanOldLogEntries();
             
             me.logger.info('Cleanup old entries');
-        }, 86455000 * 2); //* 3 days
+        }, 86455000 * 1); //* 3 days
         
         setInterval(async () => {
             const date = new Date();  
