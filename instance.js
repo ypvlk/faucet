@@ -97,7 +97,7 @@ k.forEach((pair) => {
 });
 
 let m = [
-    'binance_futures.BTCUSDT:binance_futures.BTTUSDT'
+    'binance_futures.BTCBUSD:binance_futures.ETHBUSD'
 ]
 
 // node main.js backtesting -m development -pr binance_futures.BTCBUSD:binance_futures.ETHBUSD  -d 2021-07-16 -c 0.02 0.03 -g 0.1 0.11 -tp 0.05 -p 3000 -l 1000
@@ -109,7 +109,7 @@ m.forEach((pair) => {
             'period': 3000,
             'correction': [0.02, 0.2],
             'get_position': [0.1, 0.8],
-            'take_profit': 0.085,
+            'take_profit': 0.055,
             'exchange_commission': 0.08
         },
         'strategy': {
