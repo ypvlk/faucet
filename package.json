@@ -8,7 +8,7 @@
     "start": "node main.js faucet -m production",
     "insert-file": "node main.js insert-file -m development -p var/tickers/2021-07-16_LTCUSDT_BTCUSDT_tickers.csv",
     "upload-file": "",
-    "backtesting": "node main.js backtesting -d 2021-08-12 -ps binance_futures.BTCBUSD:binance_futures.ETHBUSD -c 0.02 0.03 -gp 0.1 0.3 -tp 0.05 -ec 0.04 -p 3000 -l 1000",
+    "backtesting": "node main.js backtesting -d 2021-08-12 -ps binance_futures.BTCBUSD:binance_futures.ETHBUSD -c 0.02 0.03 -gp 0.1 0.11 -tp 0.05 -ec 0.04 -p 3000 -l 1000",
     "test": "jest",
     "migrate": "knex migrate:latest",
     "rollback": "knex migrate:rollback",

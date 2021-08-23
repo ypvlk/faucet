@@ -20,7 +20,7 @@ module.exports = {
         },
         pool: {
             min: 2,
-            max: 10, ///connections = ((core_count * 2) + effective_spindle_count)
+            max: 6, ///connections = ((core_count * 2) + effective_spindle_count)
             propagateCreateError: false // <- default is true, set to false
         },
         debug: true, //Включает вывод инфы по запросам в консоль
@@ -44,7 +44,7 @@ module.exports = {
         },
         pool: {
             min: 2,
-            max: 10, ///connections = ((core_count * 2) + effective_spindle_count)
+            max: 6, ///connections = ((core_count * 2) + effective_spindle_count)
             propagateCreateError: false // <- default is true, set to false
         },
 
@@ -52,7 +52,7 @@ module.exports = {
         //Поставил из за транзакций и pool
         //Когда пул забит транзакция зависает
         //нужно смотреть за этим значений
-        acquireConnectionTimeout: 3000,
+        // acquireConnectionTimeout: 3000,
         
         debug: false, //Включает вывод инфы по запросам в консоль
 
@@ -62,11 +62,11 @@ module.exports = {
 
         // create operations are cancelled after this many milliseconds
         // if a resource cannot be acquired
-        createTimeoutMillis: 30000,
+        createTimeoutMillis: 3000, //30000
 
         // destroy operations are awaited for at most this many milliseconds
         // new resources will be created after this timeout
-        destroyTimeoutMillis: 5000,
+        // destroyTimeoutMillis: 5000,
 
         // free resouces are destroyed after this many milliseconds
         idleTimeoutMillis: 30000,
@@ -75,7 +75,7 @@ module.exports = {
         reapIntervalMillis: 1000,
 
         // how long to idle after failed create before trying again
-        createRetryIntervalMillis: 200,
+        createRetryIntervalMillis: 100, //200
         // propagateCreateError: false
     }
 }

@@ -47,6 +47,9 @@ module.exports = class Faucet {
         const { eventEmitter } = this;
         
         setInterval(async () => {
+            //TODO
+            //delete meanreversion table
+
             await me.logsRepository.cleanOldLogEntries();
             
             me.logger.info('Cleanup old entries');
