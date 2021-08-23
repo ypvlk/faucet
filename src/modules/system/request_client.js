@@ -18,7 +18,8 @@ module.exports = class RequestClient {
             
             f(url, {
                 method: 'GET',
-                headers: headers ? headers : {'Content-Type': 'application/json'}
+                headers: headers ? headers : {'Content-Type': 'application/json'},
+                timeout: 7000,
             })
             .then(res => {
                 if (!res.ok) throw new Error(`${JSON.stringify(res.statusText)}`);

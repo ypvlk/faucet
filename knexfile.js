@@ -19,8 +19,8 @@ module.exports = {
             directory: 'db/seeds/dev'
         },
         pool: {
-            min: 1,
-            max: 2, ///connections = ((core_count * 2) + effective_spindle_count)
+            min: 2,
+            max: 10, ///connections = ((core_count * 2) + effective_spindle_count)
             propagateCreateError: false // <- default is true, set to false
         },
         debug: true, //Включает вывод инфы по запросам в консоль
@@ -43,8 +43,8 @@ module.exports = {
             directory: 'db/seeds/prod'
         },
         pool: {
-            min: 1,
-            max: 2, ///connections = ((core_count * 2) + effective_spindle_count)
+            min: 2,
+            max: 10, ///connections = ((core_count * 2) + effective_spindle_count)
             propagateCreateError: false // <- default is true, set to false
         },
 
