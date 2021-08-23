@@ -14,6 +14,7 @@ module.exports = class Faucet {
         backtestingCron,
         logsRepository,
         instances,
+        meanReversionRepository,
         projectDir
     ) {
         this.eventEmitter = eventEmitter;
@@ -27,6 +28,7 @@ module.exports = class Faucet {
         this.backtestingCron = backtestingCron;
         this.logsRepository = logsRepository;
         this.instances = instances;
+        this.meanReversionRepository = meanReversionRepository;
         this.projectDir = projectDir;
     }
 
@@ -47,13 +49,11 @@ module.exports = class Faucet {
         const { eventEmitter } = this;
         
         setInterval(async () => {
-            //TODO
-            //delete meanreversion table
-
             await me.logsRepository.cleanOldLogEntries();
+            await me.meanReversionRepository.cleanOldEntries();
             
             me.logger.info('Cleanup old entries');
-        }, 86455000 * 1); //* 3 days
+        }, 86455000 * 2); //* 3 days
         
         setInterval(async () => {
             const date = new Date();  

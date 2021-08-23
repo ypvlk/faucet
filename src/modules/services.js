@@ -424,6 +424,7 @@ module.exports = {
             this.getLogsRepository(),
             this.getInstances(),
             this.getTickersStreamService(),
+            this.getMeanReversionRepository(),
             parameters.projectDir
         );
     },

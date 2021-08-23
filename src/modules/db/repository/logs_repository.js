@@ -16,7 +16,7 @@ module.exports = class LogsRepository {
             const created_at = moment().subtract(days, 'days').unix();
 
             this.mysqlDB(this.table)
-                .timeout(3000, {cancel: true})
+                .timeout(10000, {cancel: true})
                 .where(`${this.table}.created_at`, '<', created_at)
                 .del()
                 .then(result => { 

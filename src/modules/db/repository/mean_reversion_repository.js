@@ -74,4 +74,22 @@ module.exports = class MeanReversionRepository {
         });
     }
 
+    cleanOldEntries(days = 7) {
+        return new Promise(resolve => {
+            const income_at = moment().subtract(days, 'days').unix();
+
+            this.mysqlDB(this.table)
+                .timeout(10000, {cancel: true})
+                .where(`${this.table}.income_at`, '<', income_at)
+                .del()
+                .then(result => { 
+                    resolve();
+                })
+                .catch(err => { 
+                    this.logger.error(`Mysql error in table ${this.table}: ${err}`);
+                    resolve();
+                })
+        });
+    }
+
 };
