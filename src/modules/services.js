@@ -310,7 +310,9 @@ module.exports = {
     
         return (strategyDatabaseListener = new StrategyDatabaseListener(
             this.getMeanReversionRepository(),
-            this.getBacktestingStorage()
+            this.getBacktestingStorage(),
+            this.getLogger(),
+            parameters.projectDir
         ));
     },
 

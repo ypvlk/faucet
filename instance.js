@@ -28,7 +28,7 @@ l.forEach((pair) => {
             'limit': 2000,
             'period': 3000,
             'correction': [0.02, 0.2],
-            'get_position': [0.1, 0.8],
+            'get_position': [0.1, 0.63],
             'take_profit': 0.055,
             'exchange_commission': 0.08
         },
@@ -46,7 +46,7 @@ l.forEach((pair) => {
                 'take_profit_position_change': 0.05, //%
                 'hand_delta': 0,
                 'tiers': [
-                    33, //USDT (Asset)
+                    50, //USDT (Asset)
                     33,
                     33 
                 ],
@@ -68,7 +68,7 @@ k.forEach((pair) => {
             'limit': 2000,
             'period': 3000,
             'correction': [0.02, 0.2],
-            'get_position': [0.1, 0.8],
+            'get_position': [0.1, 0.63],
             'take_profit': 0.055,
             'exchange_commission': 0.08
         },
@@ -86,7 +86,7 @@ k.forEach((pair) => {
                 'take_profit_position_change': 0.05, //%
                 'hand_delta': 0,
                 'tiers': [
-                    33, //USDT (Asset)
+                    50, //USDT (Asset)
                     33,
                     33 
                 ],
@@ -108,7 +108,7 @@ m.forEach((pair) => {
             'limit': 2000,
             'period': 3000,
             'correction': [0.02, 0.2],
-            'get_position': [0.1, 0.8],
+            'get_position': [0.1, 0.63],
             'take_profit': 0.055,
             'exchange_commission': 0.08
         },
@@ -126,7 +126,7 @@ m.forEach((pair) => {
                 'take_profit_position_change': 0.05, //%
                 'hand_delta': 0,
                 'tiers': [
-                    33, //USDT (Asset)
+                    50, //USDT (Asset)
                     33,
                     33 
                 ],

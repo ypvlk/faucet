@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const fs = require('fs');
 
-module.exports = class StrategyDatabaseListener {
+module.exports = class StrategyDatabaseListener { //TODO
     constructor(
         meanReversionRepository,
         backtestingStorage,
@@ -15,8 +15,8 @@ module.exports = class StrategyDatabaseListener {
         this.logger = logger;
         this.projectDir = projectDir;
 
-        this.files_data = {};
-        _files.push(me.files_data);
+        // this.files_data = {};
+        // _files.push(me.files_data);
     }
 
     async saveData(signalEvent) {
@@ -28,15 +28,15 @@ module.exports = class StrategyDatabaseListener {
 
         me.updateBacktestingStorage(data);
 
-        const pairs = `${data.lead_exchange}.${data.lead_symbol}_${data.driven_exchange}.${data.driven_symbol}`;
-        const path = `${me.projectDir}/var/strategy/${strategy}_${pairs}_${date}.csv`;
+        // const pairs = `${data.lead_exchange}.${data.lead_symbol}_${data.driven_exchange}.${data.driven_symbol}`;
+        // const path = `${me.projectDir}/var/strategy/${strategy}_${pairs}_${date}.csv`;
 
         //checkread file if file not exists
-        if (!me.isFileExists(path, date, strategy)) return;
+        // if (!me.isFileExists(path, date, strategy)) return;
 
-        const fields = Object.keys(me.files_data);
+        // const fields = Object.keys(me.files_data);
         
-        me.csvExportHttp.saveSyncIntoFile(_files, path, fields);
+        // me.csvExportHttp.saveSyncIntoFile(_files, path, fields);
         
         // const strategy_repository = this.getRepository(strategy);
         // return strategy_repository.insertData(data); //save data into db
@@ -67,15 +67,15 @@ module.exports = class StrategyDatabaseListener {
         if (data.average_position_lose) this.backtestingStorage.updateAveragePositionLose(data.average_position_lose);
     }
 
-    isFileExists(path) {
+    // isFileExists(path) {
 
-        try {
-            fs.accessSync(path, fs.constants.F_OK);
-        } catch(e) {
-            return true;
-        }
+    //     try {
+    //         fs.accessSync(path, fs.constants.F_OK);
+    //     } catch(e) {
+    //         return true;
+    //     }
         
-        this.logger.debug(`File: ${path} exists.`);
-        return false;
-    }
+    //     this.logger.debug(`File: ${path} exists.`);
+    //     return false;
+    // }
 };
