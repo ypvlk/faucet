@@ -8,6 +8,8 @@ node_modules
 /node_modules
 /var/tickers/*.csv
 /var/backtesting/*.csv
+/var/strategy/*.csv
+
 
 # Logs
 *.log

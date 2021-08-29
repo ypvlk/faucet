@@ -78,7 +78,8 @@ module.exports = class Faucet {
         });
 
         eventEmitter.on('tick_signal', async function(signalEvent) {
-            await me.strategyDatabaseListener.saveData(signalEvent); //save strategy data at db 
+            // await me.strategyFileListener.saveIntoFile(signalEvent); //save data into file
+            // await me.strategyDatabaseListener.saveData(signalEvent); //save strategy data at db 
             // await me.signalDatabaseListener.saveSignal(signalEvent); //save signal at db
             
             // if (signalEvent.signals && signalEvent.signals.length > 0) {

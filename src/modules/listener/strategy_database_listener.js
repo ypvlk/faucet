@@ -1,24 +1,45 @@
 const _ = require('lodash');
+const fs = require('fs');
 
 module.exports = class StrategyDatabaseListener {
     constructor(
         meanReversionRepository,
-        backtestingStorage
+        backtestingStorage,
+
+        logger,
+        projectDir
     ) {
         this.meanReversionRepository = meanReversionRepository;
         this.backtestingStorage = backtestingStorage;
+
+        this.logger = logger;
+        this.projectDir = projectDir;
+
+        this.files_data = {};
+        _files.push(me.files_data);
     }
 
     async saveData(signalEvent) {
         const {strategy, data} = signalEvent;
 
+        const me = this;
+
         if (!data || !strategy) return;
 
-        this.updateBacktestingStorage(data);
-        
-        const strategy_repository = this.getRepository(strategy);
+        me.updateBacktestingStorage(data);
 
-        return strategy_repository.insertData(data);
+        const pairs = `${data.lead_exchange}.${data.lead_symbol}_${data.driven_exchange}.${data.driven_symbol}`;
+        const path = `${me.projectDir}/var/strategy/${strategy}_${pairs}_${date}.csv`;
+
+        //checkread file if file not exists
+        if (!me.isFileExists(path, date, strategy)) return;
+
+        const fields = Object.keys(me.files_data);
+        
+        me.csvExportHttp.saveSyncIntoFile(_files, path, fields);
+        
+        // const strategy_repository = this.getRepository(strategy);
+        // return strategy_repository.insertData(data); //save data into db
     }
 
     getRepository(name) {
@@ -44,5 +65,17 @@ module.exports = class StrategyDatabaseListener {
         if (data.min_position_lose) this.backtestingStorage.updateMinPositionLose(data.min_position_lose);
         if (data.average_position_profit) this.backtestingStorage.updateAveragePositionProfit(data.average_position_profit);
         if (data.average_position_lose) this.backtestingStorage.updateAveragePositionLose(data.average_position_lose);
+    }
+
+    isFileExists(path) {
+
+        try {
+            fs.accessSync(path, fs.constants.F_OK);
+        } catch(e) {
+            return true;
+        }
+        
+        this.logger.debug(`File: ${path} exists.`);
+        return false;
     }
 };
