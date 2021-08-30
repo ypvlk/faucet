@@ -219,7 +219,7 @@ module.exports = class Http {
         });
 
         app.get('/backtesting/download', async (req, res) => {
-            //localhost:3000/backtesting/download?filename=BTCBUSD_ETHBUSD_2021-08-18.csv
+            //localhost:3000/backtesting/download?filename=BTCUSDT_ETHUSDT_2021-08-29.csv
             const {
                 filename,
             } = req.query;

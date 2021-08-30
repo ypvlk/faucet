@@ -29,7 +29,7 @@ l.forEach((pair) => {
             'period': 3000,
             'correction': [0.02, 0.2],
             'get_position': [0.1, 0.63],
-            'take_profit': 0.055,
+            'take_profit': 0.1,
             'exchange_commission': 0.08
         },
         'strategy': {

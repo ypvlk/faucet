@@ -26,7 +26,7 @@ module.exports = class StrategyDatabaseListener { //TODO
 
         if (!data || !strategy) return;
 
-        me.updateBacktestingStorage(data);
+        return me.updateBacktestingStorage(data);
 
         // const pairs = `${data.lead_exchange}.${data.lead_symbol}_${data.driven_exchange}.${data.driven_symbol}`;
         // const path = `${me.projectDir}/var/strategy/${strategy}_${pairs}_${date}.csv`;
